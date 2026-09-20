@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Verification — SocialProof</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .verification-card {
+      max-width: 520px;
+      margin: 0 auto;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 1.25rem;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    }
+    .status-icon-bubble {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+    .status-icon-bubble i {
+      font-size: 2.4rem;
+    }
+    .status-icon-bubble.success {
+      background: #ecfdf5;
+      color: #059669;
+      box-shadow: 0 0 0 8px #d1fae5;
+    }
+    .status-icon-bubble.invalid {
+      background: #fef2f2;
+      color: #dc2626;
+      box-shadow: 0 0 0 8px #fee2e2;
+    }
+    .status-icon-bubble.expired {
+      background: #fffbeb;
+      color: #d97706;
+      box-shadow: 0 0 0 8px #fef3c7;
+    }
+    .status-icon-bubble.already {
+      background: #eff6ff;
+      color: #2563eb;
+      box-shadow: 0 0 0 8px #dbeafe;
+    }
+    .brand-logo {
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      color: #0f172a;
+    }
+    .brand-logo em {
+      color: #059669;
+      font-style: normal;
+    }
+  </style>
+</head>
+<body class="bg-subtle-mesh min-vh-100 d-flex flex-column">
+
+  <!-- Minimal Brand Header -->
+  <header class="py-4 border-bottom bg-white">
+    <div class="container text-center">
+      <a href="/" class="brand-logo d-inline-flex align-items-center gap-2">
+        <span class="rounded-3 bg-emerald-light p-1 text-emerald d-inline-flex align-items-center justify-content-center" style="width:34px;height:34px;">
+          <i class="bi bi-chat-square-quote-fill fs-5"></i>
+        </span>
+        <span>Social<em>Proof</em></span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Verification Result Content -->
+  <main class="container my-auto py-5">
+    <div class="row justify-content-center">
+      <div class="col-12">
+
+        <!-- Verification Card -->
+        <div class="verification-card p-4 p-md-5 text-center">
+
+          <!-- Dynamic Status Icon -->
+          <div id="status-icon-wrap" class="status-icon-bubble success">
+            <i id="status-icon" class="bi bi-patch-check-fill"></i>
+          </div>
+
+          <!-- Dynamic Status Badge -->
+          <div class="mb-3">
+            <span id="status-badge" class="badge bg-emerald-subtle text-emerald px-3 py-1.5 rounded-pill fw-semibold">
+              <i class="bi bi-patch-check-fill me-1"></i> Verified
+            </span>
+          </div>
+
+          <!-- Title -->
+          <h3 id="status-title" class="fw-bold text-dark mb-2">
+            Email Verified Successfully!
+          </h3>
+
+          <!-- Subtitle / Message -->
+          <p id="status-desc" class="text-secondary fs-6 mb-4" style="line-height: 1.6;">
+            Your email address has been successfully verified.
+          </p>
+
+          <!-- Action Buttons Container -->
+          <div id="status-actions" class="d-flex flex-column gap-2">
+            <a href="/?auth=login" class="btn btn-emerald py-2.5 fw-semibold rounded-3 shadow-emerald">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Go to Sign In
+            </a>
+            <a href="/" class="btn btn-outline-secondary py-2.5 fw-medium rounded-3 border-0">
+              Return to Homepage
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-4 text-center text-muted fs-7 border-top bg-white">
+    <div class="container">
+      &copy; <span id="year"></span> SocialProof. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Parse URL query parameters
+    const params = new URLSearchParams(window.location.search);
+    const statusParam = (params.get('status') || '').toLowerCase().trim();
+    const tokenParam = params.get('token');
+
+    const iconWrap = document.getElementById('status-icon-wrap');
+    const iconEl = document.getElementById('status-icon');
+    const badgeEl = document.getElementById('status-badge');
+    const titleEl = document.getElementById('status-title');
+    const descEl = document.getElementById('status-desc');
+    const actionsEl = document.getElementById('status-actions');
+
+    function renderState(state) {
+      if (state === 'success') {
+        // Requirement 5:
+        // 🟢 Email Verified Successfully!
+        // "Your email address has been successfully verified."
+        // [Go to Sign In]
+        document.title = "Email Verified Successfully! — SocialProof";
+        iconWrap.className = 'status-icon-bubble success';
+        iconEl.className = 'bi bi-patch-check-fill';
+        badgeEl.className = 'badge bg-emerald-subtle text-emerald px-3 py-1.5 rounded-pill fw-semibold';
+        badgeEl.innerHTML = '<i class="bi bi-patch-check-fill me-1"></i> Verified';
+        titleEl.textContent = 'Email Verified Successfully!';
+        descEl.textContent = 'Your email address has been successfully verified.';
+        actionsEl.innerHTML = `
+          <a href="/?auth=login" class="btn btn-emerald py-2.5 fw-semibold rounded-3 shadow-emerald mb-1">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Go to Sign In
+          </a>
+          <a href="/" class="btn btn-outline-secondary py-2 fw-medium rounded-3 border-0">
+            Return to Homepage
+          </a>
+        `;
+      } else if (state === 'invalid' || state === 'missing') {
+        // Requirement 6:
+        // 🔴 Verification Failed
+        // "This verification link is invalid or no longer available."
+        // [Request New Verification Email]
+        document.title = "Verification Failed — SocialProof";
+        iconWrap.className = 'status-icon-bubble invalid';
+        iconEl.className = 'bi bi-x-circle-fill';
+        badgeEl.className = 'badge bg-danger-subtle text-danger px-3 py-1.5 rounded-pill fw-semibold';
+        badgeEl.innerHTML = '<i class="bi bi-x-circle me-1"></i> Verification Failed';
+        titleEl.textContent = 'Verification Failed';
+        descEl.textContent = 'This verification link is invalid or no longer available.';
+        actionsEl.innerHTML = `
+          <a href="/?auth=login" class="btn btn-emerald py-2.5 fw-semibold rounded-3 shadow-emerald mb-1">
+            <i class="bi bi-envelope-arrow-up me-1"></i> Request New Verification Email
+          </a>
+          <a href="/?auth=register" class="btn btn-outline-secondary py-2.5 fw-medium rounded-3">
+            <i class="bi bi-person-plus me-1"></i> Create New Account
+          </a>
+        `;
+      } else if (state === 'expired') {
+        // Requirement 7:
+        // 🟠 Verification Link Expired
+        // "This verification link has expired. Please request a new verification email."
+        // [Resend Verification Email]
+        document.title = "Verification Link Expired — SocialProof";
+        iconWrap.className = 'status-icon-bubble expired';
+        iconEl.className = 'bi bi-clock-history';
+        badgeEl.className = 'badge bg-warning-subtle text-warning-emphasis px-3 py-1.5 rounded-pill fw-semibold';
+        badgeEl.innerHTML = '<i class="bi bi-clock-history me-1"></i> Link Expired';
+        titleEl.textContent = 'Verification Link Expired';
+        descEl.textContent = 'This verification link has expired. Please request a new verification email.';
+        actionsEl.innerHTML = `
+          <a href="/?auth=login" class="btn btn-emerald py-2.5 fw-semibold rounded-3 shadow-emerald mb-1">
+            <i class="bi bi-arrow-repeat me-1"></i> Resend Verification Email
+          </a>
+          <a href="/" class="btn btn-outline-secondary py-2 fw-medium rounded-3 border-0">
+            Return to Homepage
+          </a>
+        `;
+      } else if (state === 'already_verified' || state === 'already_used') {
+        // Requirement 8:
+        // "Email Already Verified"
+        // "Your email address has already been verified."
+        // [Go to Sign In]
+        document.title = "Email Already Verified — SocialProof";
+        iconWrap.className = 'status-icon-bubble already';
+        iconEl.className = 'bi bi-info-circle-fill';
+        badgeEl.className = 'badge bg-primary-subtle text-primary px-3 py-1.5 rounded-pill fw-semibold';
+        badgeEl.innerHTML = '<i class="bi bi-patch-check-fill me-1"></i> Already Verified';
+        titleEl.textContent = 'Email Already Verified';
+        descEl.textContent = 'Your email address has already been verified.';
+        actionsEl.innerHTML = `
+          <a href="/?auth=login" class="btn btn-emerald py-2.5 fw-semibold rounded-3 shadow-emerald mb-1">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Go to Sign In
+          </a>
+          <a href="/dashboard" class="btn btn-outline-secondary py-2.5 fw-medium rounded-3">
+            <i class="bi bi-speedometer2 me-1"></i> Go to Dashboard
+          </a>
+        `;
+      } else if (state === 'loading') {
+        document.title = "Verifying Email... — SocialProof";
+        iconWrap.className = 'status-icon-bubble success';
+        iconEl.className = 'spinner-border text-emerald';
+        badgeEl.className = 'badge bg-emerald-subtle text-emerald px-3 py-1.5 rounded-pill fw-semibold';
+        badgeEl.innerHTML = '<i class="bi bi-arrow-clockwise me-1"></i> Verifying...';
+        titleEl.textContent = 'Validating Verification Link...';
+        descEl.textContent = 'Please wait while we confirm your email verification link.';
+        actionsEl.innerHTML = '';
+      } else {
+        // Default / Error
+        document.title = "Email Verification — SocialProof";
+        iconWrap.className = 'status-icon-bubble invalid';
+        iconEl.className = 'bi bi-exclamation-triangle-fill';
+        badgeEl.className = 'badge bg-danger-subtle text-danger px-3 py-1.5 rounded-pill fw-semibold';
+        badgeEl.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i> Error';
+        titleEl.textContent = 'Verification Error';
+        descEl.textContent = 'An unexpected error occurred while verifying your email. Please try again later.';
+        actionsEl.innerHTML = `
+          <a href="/" class="btn btn-outline-secondary py-2.5 fw-medium rounded-3">
+            Return to Homepage
+          </a>
+        `;
+      }
+    }
+
+    // Direct token validation if accessed as /email-verified?token=... without status
+    if (tokenParam && !statusParam) {
+      renderState('loading');
+      fetch('/api/auth/verify-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: tokenParam })
+      })
+      .then(res => res.json().then(data => ({ ok: res.ok, status: res.status, data })))
+      .then(({ ok, data }) => {
+        if (ok) {
+          renderState('success');
+        } else {
+          const detail = (data.detail || '').toLowerCase();
+          if (detail.includes('already verified')) {
+            renderState('already_verified');
+          } else if (detail.includes('expired')) {
+            renderState('expired');
+          } else if (detail.includes('already') || detail.includes('used')) {
+            renderState('already_verified');
+          } else {
+            renderState('invalid');
+          }
+        }
+      })
+      .catch(() => {
+        renderState('invalid');
+      });
+    } else if (statusParam) {
+      renderState(statusParam);
+    } else {
+      renderState('invalid');
+    }
+  </script>
+</body>
+</html>

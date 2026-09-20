@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Testimonial</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-subtle-mesh min-vh-100 d-flex flex-column py-4 py-md-5">
+
+    <div class="container my-auto">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-md-9">
+
+                <!-- Loading State Card -->
+                <div id="collect-loading" class="card border-0 shadow-lg rounded-4 p-5 text-center bg-white">
+                    <div class="spinner-border text-emerald mx-auto mb-3" role="status"></div>
+                    <p class="text-secondary fw-medium fs-6 mb-0">Loading testimonial submission form...</p>
+                </div>
+
+                <!-- 404 Error Card -->
+                <div id="collect-error" class="card border-0 shadow-lg rounded-4 p-5 text-center bg-white d-none">
+                    <div class="rounded-circle bg-danger-subtle text-danger mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:64px;height:64px;">
+                        <i class="bi bi-exclamation-triangle-fill fs-2"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark mb-2">Space Not Found</h4>
+                    <p id="collect-error-msg" class="text-secondary fs-6 mb-4">The testimonial collection space you are looking for does not exist or has been removed.</p>
+                    <a href="/" class="btn btn-outline-dark px-4 py-2 fw-semibold rounded-3">&larr; Return Home</a>
+                </div>
+
+                <!-- Main Public Testimonial Form Card -->
+                <div id="collect-form-card" class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white d-none">
+                    <div class="card-header bg-dark-slate text-white p-4 text-center border-0 position-relative">
+                        <div id="space-logo-container" class="mb-3"></div>
+                        <h3 id="space-name-title" class="fw-extrabold mb-2 text-white fs-3">Space Name</h3>
+                        <p id="space-custom-prompt" class="text-white-50 fs-6 mb-0 px-md-4">Share your feedback with us!</p>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5">
+                        <div id="form-alert-container" class="d-none mb-4"></div>
+
+                        <form id="public-testimonial-form" onsubmit="handleTestimonialSubmit(event)" enctype="multipart/form-data">
+
+                            <!-- Star Rating Selector (rendered if rating_enabled=true) -->
+                            <div id="rating-section" class="mb-4 text-center d-none">
+                                <label class="form-label fw-bold text-dark fs-6 d-block mb-2">Overall Rating <span class="text-danger">*</span></label>
+                                <div class="star-rating-selector d-inline-flex gap-2 p-2 bg-light rounded-pill border" id="star-rating-container">
+                                    <button type="button" class="star-btn border-0 bg-transparent text-muted fs-3 px-1" data-value="1" onclick="setStarRating(1)"><i class="bi bi-star-fill"></i></button>
+                                    <button type="button" class="star-btn border-0 bg-transparent text-muted fs-3 px-1" data-value="2" onclick="setStarRating(2)"><i class="bi bi-star-fill"></i></button>
+                                    <button type="button" class="star-btn border-0 bg-transparent text-muted fs-3 px-1" data-value="3" onclick="setStarRating(3)"><i class="bi bi-star-fill"></i></button>
+                                    <button type="button" class="star-btn border-0 bg-transparent text-muted fs-3 px-1" data-value="4" onclick="setStarRating(4)"><i class="bi bi-star-fill"></i></button>
+                                    <button type="button" class="star-btn border-0 bg-transparent text-muted fs-3 px-1" data-value="5" onclick="setStarRating(5)"><i class="bi bi-star-fill"></i></button>
+                                </div>
+                                <input type="hidden" id="input-rating" name="rating" value="">
+                            </div>
+
+                            <!-- Review Text -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-dark fs-7">Your Review / Testimonial <span class="text-danger">*</span></label>
+                                <textarea class="form-control rounded-3 p-3" id="input-review-text" name="review_text" rows="4" placeholder="Write your honest review here (at least 10 characters)..." required></textarea>
+                            </div>
+
+                            <!-- Custom Questions Container -->
+                            <div id="custom-questions-section" class="mb-4 d-none">
+                                <h6 class="fw-bold text-dark fs-7 text-uppercase tracking-wider mb-3">Questions from the Team</h6>
+                                <div id="custom-questions-container" class="d-flex flex-column gap-3"></div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <!-- Customer Information -->
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-dark fs-7">Your Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control rounded-3" id="input-client-name" name="client_name" placeholder="Jane Smith" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-dark fs-7">Your Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control rounded-3" id="input-client-email" name="client_email" placeholder="jane@company.com" required>
+                                    <small class="text-muted fs-8">Your email is kept private and will not be displayed publicly.</small>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold text-dark fs-7">Title / Company Role <small class="text-muted fw-normal">(Optional)</small></label>
+                                    <input type="text" class="form-control rounded-3" id="input-company-role" name="company_role" placeholder="e.g. Founder @ TechCorp">
+                                </div>
+                            </div>
+
+                            <!-- Avatar Upload Section (rendered if avatar_enabled=true) -->
+                            <div id="avatar-section" class="mt-4 pt-3 border-top d-none">
+                                <label class="form-label fw-semibold text-dark fs-7 mb-2">Upload Profile Avatar <small class="text-muted fw-normal">(Optional)</small></label>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div id="avatar-preview-box" class="rounded-circle bg-light border d-flex align-items-center justify-content-center text-muted" style="width:56px;height:56px;">
+                                        <i class="bi bi-person-fill fs-3"></i>
+                                    </div>
+                                    <div class="flex-fill">
+                                        <input type="file" class="form-control rounded-3 form-control-sm" id="input-avatar-file" accept="image/*" onchange="previewAvatar(this)">
+                                        <small class="text-muted fs-8">Max 2MB. JPEG, PNG, WebP, GIF, SVG.</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="mt-5">
+                                <button type="submit" id="submit-btn" class="btn btn-emerald w-100 py-3 fw-bold rounded-3 fs-6 shadow-emerald">
+                                    <i class="bi bi-send-fill me-2"></i> Submit Testimonial
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Success Confirmation Screen -->
+                <div id="collect-success-card" class="card border-0 shadow-lg rounded-4 p-5 text-center bg-white d-none animate-fade-in-up">
+                    <div class="rounded-circle bg-emerald-light text-emerald mx-auto mb-3.5 d-flex align-items-center justify-content-center shadow-sm" style="width:72px;height:72px;">
+                        <i class="bi bi-check-lg fs-1"></i>
+                    </div>
+                    <h3 class="fw-extrabold text-dark mb-2">Thank You!</h3>
+                    <p class="text-secondary fs-6 mb-4">Your testimonial has been submitted successfully and is awaiting review.</p>
+                    <div class="alert alert-light border rounded-3 text-muted fs-7 max-w-400 mx-auto">
+                        <i class="bi bi-shield-check text-emerald me-1"></i> We appreciate your feedback and support!
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE_URL = (window.location.protocol.startsWith('http') && window.location.port === '8000')
+            ? `${window.location.protocol}//${window.location.host}`
+            : 'http://127.0.0.1:8000';
+
+        let currentSpaceConfig = null;
+        let selectedStarRating = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPublicSpaceConfig();
+        });
+
+        function getSlugFromUrl() {
+            const pathParts = window.location.pathname.split('/');
+            const idx = pathParts.indexOf('collect');
+            if (idx !== -1 && pathParts[idx + 1]) {
+                return pathParts[idx + 1];
+            }
+            // Fallback for query param: /collect?slug=xyz
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('slug') || '';
+        }
+
+        async function loadPublicSpaceConfig() {
+            const slug = getSlugFromUrl();
+            if (!slug) {
+                showError("No Space slug provided in URL.");
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/public/spaces/${slug}`);
+                if (!res.ok) {
+                    const data = await res.json();
+                    showError(data.detail || "Space not found.");
+                    return;
+                }
+
+                currentSpaceConfig = await res.json();
+                renderForm(currentSpaceConfig);
+            } catch (err) {
+                showError("Network error connecting to platform service.");
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('collect-loading').classList.add('d-none');
+            document.getElementById('collect-form-card').classList.add('d-none');
+            document.getElementById('collect-error-msg').textContent = msg;
+            document.getElementById('collect-error').classList.remove('d-none');
+        }
+
+        function renderForm(config) {
+            document.getElementById('collect-loading').classList.add('d-none');
+            document.getElementById('collect-form-card').classList.remove('d-none');
+
+            // Set Header Name & Prompt
+            document.getElementById('space-name-title').textContent = config.name;
+            document.title = `Submit Review — ${config.name}`;
+            if (config.custom_prompt) {
+                document.getElementById('space-custom-prompt').textContent = config.custom_prompt;
+            }
+
+            // Set Logo if available
+            const logoContainer = document.getElementById('space-logo-container');
+            if (config.logo_url) {
+                logoContainer.innerHTML = `<img src="${config.logo_url}" alt="${config.name} Logo" class="rounded-3 border bg-white p-1" style="max-height:60px;">`;
+            } else {
+                logoContainer.innerHTML = '';
+            }
+
+            // Rating Selector
+            if (config.rating_enabled) {
+                document.getElementById('rating-section').classList.remove('d-none');
+            }
+
+            // Avatar Upload
+            if (config.avatar_enabled) {
+                document.getElementById('avatar-section').classList.remove('d-none');
+            }
+
+            // Custom Questions
+            if (config.custom_questions && config.custom_questions.length > 0) {
+                const questionsSec = document.getElementById('custom-questions-section');
+                const questionsContainer = document.getElementById('custom-questions-container');
+                questionsSec.classList.remove('d-none');
+                questionsContainer.innerHTML = '';
+
+                config.custom_questions.forEach((q, index) => {
+                    const qDiv = document.createElement('div');
+                    qDiv.className = 'custom-question-group';
+                    qDiv.innerHTML = `
+                        <label class="form-label fw-semibold text-dark fs-7">${index + 1}. ${escapeHtml(q.question)}</label>
+                        <input type="text" class="form-control rounded-3 custom-q-answer" data-question="${escapeHtml(q.question)}" placeholder="Your answer...">
+                    `;
+                    questionsContainer.appendChild(qDiv);
+                });
+            }
+        }
+
+        function setStarRating(val) {
+            selectedStarRating = val;
+            document.getElementById('input-rating').value = val;
+            const starBtns = document.querySelectorAll('#star-rating-container .star-btn');
+            starBtns.forEach((btn, i) => {
+                if (i < val) {
+                    btn.className = 'star-btn border-0 bg-transparent text-warning fs-3 px-1';
+                } else {
+                    btn.className = 'star-btn border-0 bg-transparent text-muted fs-3 px-1';
+                }
+            });
+        }
+
+        function previewAvatar(input) {
+            const previewBox = document.getElementById('avatar-preview-box');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewBox.innerHTML = `<img src="${e.target.result}" class="w-100 h-100 object-fit-cover rounded-circle">`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        async function handleTestimonialSubmit(e) {
+            e.preventDefault();
+            const alertBox = document.getElementById('form-alert-container');
+            alertBox.className = 'd-none';
+            alertBox.innerHTML = '';
+
+            const submitBtn = document.getElementById('submit-btn');
+            const originalBtnHtml = submitBtn.innerHTML;
+
+            const name = document.getElementById('input-client-name').value.trim();
+            const email = document.getElementById('input-client-email').value.trim();
+            const reviewText = document.getElementById('input-review-text').value.trim();
+            const role = document.getElementById('input-company-role').value.trim();
+            const ratingVal = document.getElementById('input-rating').value;
+
+            if (currentSpaceConfig.rating_enabled && (!ratingVal || ratingVal === '0')) {
+                return showFormAlert('Please select a star rating (1 to 5).');
+            }
+
+            if (reviewText.length < 10) {
+                return showFormAlert('Your review text must be at least 10 characters long.');
+            }
+
+            // Build FormData
+            const formData = new FormData();
+            formData.append('client_name', name);
+            formData.append('client_email', email);
+            formData.append('review_text', reviewText);
+            if (role) formData.append('company_role', role);
+            if (currentSpaceConfig.rating_enabled && ratingVal) {
+                formData.append('rating', ratingVal);
+            }
+
+            // Avatar file
+            if (currentSpaceConfig.avatar_enabled) {
+                const avatarInput = document.getElementById('input-avatar-file');
+                if (avatarInput.files && avatarInput.files[0]) {
+                    formData.append('avatar', avatarInput.files[0]);
+                }
+            }
+
+            // Custom questions answers
+            const qAnswers = [];
+            const answerInputs = document.querySelectorAll('.custom-q-answer');
+            answerInputs.forEach(inp => {
+                const q = inp.getAttribute('data-question');
+                const a = inp.value.trim();
+                if (q && a) qAnswers.push({ question: q, answer: a });
+            });
+            if (qAnswers.length > 0) {
+                formData.append('custom_answers', JSON.stringify(qAnswers));
+            }
+
+            // Disable submit button during request (Anti-abuse loading state)
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span>Submitting...`;
+
+            const slug = getSlugFromUrl();
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/public/spaces/${slug}/testimonials`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                    return showFormAlert(data.detail || 'Submission failed. Please check your form inputs.');
+                }
+
+                // Show Success Screen
+                document.getElementById('collect-form-card').classList.add('d-none');
+                document.getElementById('collect-success-card').classList.remove('d-none');
+            } catch (err) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+                showFormAlert('Network error submitting testimonial. Please try again.');
+            }
+        }
+
+        function showFormAlert(msg) {
+            const alertBox = document.getElementById('form-alert-container');
+            alertBox.className = 'alert alert-danger rounded-3 fs-7 py-2.5 px-3';
+            alertBox.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-2"></i>${msg}`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — SocialProof</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+:root{--primary:#059669;--primary-dark:#047857;--primary-light:#ecfdf5;--sidebar-w:240px;--topbar-h:56px}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;background:#f3f4f6;min-height:100vh}
+/* ── Sidebar ── */
+#sidebar{width:var(--sidebar-w);height:100vh;position:fixed;top:0;left:0;background:#fff;border-right:1px solid #e5e7eb;display:flex;flex-direction:column;z-index:200;transition:transform .25s ease;overflow-y:auto}
+#sidebar .sb-brand{padding:1.1rem 1.2rem;display:flex;align-items:center;gap:.6rem;border-bottom:1px solid #f3f4f6;text-decoration:none}
+#sidebar .sb-brand .brand-icon{width:32px;height:32px;background:linear-gradient(135deg,#059669,#34d399);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.95rem;flex-shrink:0}
+#sidebar .sb-brand span{font-weight:800;font-size:1rem;color:#111827}
+#sidebar .sb-brand span em{color:var(--primary);font-style:normal}
+#sidebar nav{flex:1;padding:.75rem .5rem}
+#sidebar nav .nav-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;padding:.6rem .75rem .3rem;margin-top:.5rem}
+.sb-link{display:flex;align-items:center;gap:.65rem;padding:.55rem .75rem;border-radius:.5rem;color:#374151;font-size:.875rem;font-weight:500;text-decoration:none;border:none;background:transparent;width:100%;cursor:pointer;transition:background .12s,color .12s;margin-bottom:2px}
+.sb-link i{font-size:1rem;width:18px;text-align:center;flex-shrink:0}
+.sb-link:hover{background:#f9fafb;color:#111827}
+.sb-link.active{background:var(--primary-light);color:var(--primary);font-weight:600}
+.sb-link.active i{color:var(--primary)}
+.sb-link.sb-logout{color:#dc2626}
+.sb-link.sb-logout:hover{background:#fef2f2;color:#b91c1c}
+#sidebar .sb-footer{padding:.75rem 1rem;border-top:1px solid #f3f4f6;font-size:.75rem;color:#9ca3af}
+/* ── Overlay (mobile) ── */
+#sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:199}
+/* ── Top bar (mobile) ── */
+#topbar{display:none;position:fixed;top:0;left:0;right:0;height:var(--topbar-h);background:#fff;border-bottom:1px solid #e5e7eb;align-items:center;padding:0 1rem;gap:.75rem;z-index:150}
+#topbar .tb-brand{font-weight:800;font-size:.95rem;color:#111827;flex:1}
+#topbar .tb-brand em{color:var(--primary);font-style:normal}
+/* ── Main content ── */
+#main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+#content{flex:1;padding:2rem}
+/* ── Loading screen ── */
+#loading-screen{position:fixed;inset:0;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+/* ── Cards ── */
+.stat-card{background:#fff;border:1px solid #e5e7eb;border-radius:1rem;padding:1.25rem 1.5rem;transition:box-shadow .15s}
+.stat-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.07)}
+.stat-card .stat-icon{width:44px;height:44px;border-radius:.75rem;display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0}
+.stat-card .stat-val{font-size:1.75rem;font-weight:800;color:#111827;line-height:1}
+.stat-card .stat-lbl{font-size:.78rem;color:#6b7280;font-weight:500;margin-top:.25rem}
+.space-card{background:#fff;border:1px solid #e5e7eb;border-radius:.875rem;padding:1.25rem;display:flex;flex-direction:column;gap:.75rem;transition:box-shadow .15s}
+.space-card:hover{box-shadow:0 4px 24px rgba(5,150,105,.09)}
+.space-init{width:44px;height:44px;border-radius:.6rem;background:linear-gradient(135deg,var(--primary),#34d399);color:#fff;font-weight:700;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.review-card{background:#fff;border:1px solid #e5e7eb;border-radius:.875rem;padding:1.25rem;transition:box-shadow .15s}
+.review-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.06)}
+.review-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;font-weight:700;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.review-text-clamp{overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;cursor:pointer}
+.review-text-clamp.expanded{-webkit-line-clamp:unset}
+/* ── Avatar circle ── */
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#34d399);color:#fff;font-size:2rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+/* ── Badges ── */
+.badge-pending{background:#fef9c3;color:#854d0e;border:1px solid #fde68a}
+.badge-approved{background:#dcfce7;color:#14532d;border:1px solid #86efac}
+.badge-rejected{background:#fee2e2;color:#7f1d1d;border:1px solid #fca5a5}
+.badge-archived{background:#f3f4f6;color:#374151;border:1px solid #d1d5db}
+.badge-featured{background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd}
+/* ── Buttons ── */
+.btn-primary-sp{background:var(--primary);color:#fff;border:none;padding:.5rem 1.1rem;border-radius:.5rem;font-weight:600;font-size:.875rem;cursor:pointer;transition:background .15s}
+.btn-primary-sp:hover{background:var(--primary-dark)}
+.btn-outline-sp{background:transparent;color:var(--primary);border:1.5px solid var(--primary);padding:.45rem 1rem;border-radius:.5rem;font-weight:600;font-size:.875rem;cursor:pointer;transition:all .15s}
+.btn-outline-sp:hover{background:var(--primary-light)}
+/* ── Moderation Tabs & Action Buttons ── */
+.mod-tab-btn{border:1px solid #e5e7eb;background:#fff;color:#4b5563;font-weight:600;font-size:.82rem;padding:.4rem .9rem;border-radius:2rem;cursor:pointer;transition:all .15s ease}
+.mod-tab-btn:hover{background:#f9fafb;color:#111827}
+.mod-tab-btn.active{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+.btn-action-approve{background:#10b981;color:#fff;border:none;font-size:.78rem;font-weight:600;padding:.35rem .75rem;border-radius:.4rem;cursor:pointer;transition:background .15s;display:inline-flex;align-items:center;gap:.3rem}
+.btn-action-approve:hover{background:#059669;color:#fff}
+.btn-action-reject{background:transparent;color:#ef4444;border:1px solid #fca5a5;font-size:.78rem;font-weight:600;padding:.35rem .75rem;border-radius:.4rem;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:.3rem}
+.btn-action-reject:hover{background:#fef2f2;color:#b91c1c}
+.btn-action-archive{background:transparent;color:#6b7280;border:1px solid #d1d5db;font-size:.78rem;font-weight:600;padding:.35rem .75rem;border-radius:.4rem;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:.3rem}
+.btn-action-archive:hover{background:#f3f4f6;color:#374151}
+.btn-action-feature{background:transparent;color:#7c3aed;border:1px solid #c4b5fd;font-size:.78rem;font-weight:600;padding:.35rem .75rem;border-radius:.4rem;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:.3rem}
+.btn-action-feature:hover{background:#ede9fe;color:#6d28d9}
+.btn-action-feature.is-featured{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.btn-action-feature.is-featured:hover{background:#6d28d9}
+/* ── Page headers ── */
+.page-header{margin-bottom:1.5rem}
+.page-header h2{font-size:1.4rem;font-weight:800;color:#111827;margin:0 0 .2rem}
+.page-header p{color:#6b7280;font-size:.875rem;margin:0}
+/* ── Form ── */
+.form-label{font-weight:600;font-size:.82rem;color:#374151;margin-bottom:.3rem}
+.form-control,.form-select{border:1.5px solid #e5e7eb;border-radius:.5rem;font-size:.875rem;padding:.5rem .75rem;transition:border-color .15s}
+.form-control:focus,.form-select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(5,150,105,.12)}
+/* ── Skeleton ── */
+.skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:.5rem}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* ── Toast ── */
+#toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9000;display:flex;flex-direction:column;gap:.5rem}
+.sp-toast{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-radius:.75rem;background:#fff;border:1px solid #e5e7eb;box-shadow:0 4px 20px rgba(0,0,0,.12);font-size:.875rem;font-weight:500;min-width:260px;max-width:360px;animation:slideIn .25s ease}
+.sp-toast.success{border-left:4px solid var(--primary);color:#064e3b}
+.sp-toast.error{border-left:4px solid #ef4444;color:#7f1d1d}
+@keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+/* ── Star rating ── */
+.stars{color:#f59e0b;letter-spacing:.05em}
+.stars .empty{color:#d1d5db}
+/* ── Custom scrollbar ── */
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:4px}
+/* ── Responsive ── */
+@media(max-width:768px){
+  #sidebar{transform:translateX(calc(-1 * var(--sidebar-w)))}
+  #sidebar.open{transform:none}
+  #sb-overlay.open{display:block}
+  #topbar{display:flex}
+  #main{margin-left:0;padding-top:var(--topbar-h)}
+  #content{padding:1rem}
+}
+/* ── Empty state ── */
+.empty-state{text-align:center;padding:3.5rem 1rem;color:#9ca3af}
+.empty-state i{font-size:3rem;margin-bottom:1rem;display:block;opacity:.4}
+.empty-state h5{color:#374151;font-weight:700;margin-bottom:.4rem}
+/* ── Slug preview ── */
+.slug-preview{font-size:.78rem;color:var(--primary);font-family:monospace;margin-top:.25rem}
+/* ── Logo preview ── */
+#logo-preview-box{width:56px;height:56px;border-radius:.6rem;border:1.5px dashed #d1d5db;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+#logo-preview-box img{width:100%;height:100%;object-fit:cover}
+/* ── filter bar ── */
+.filter-bar{background:#fff;border:1px solid #e5e7eb;border-radius:.75rem;padding:.85rem 1rem;margin-bottom:1.25rem;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+/* ── table ── */
+.sp-table{width:100%;border-collapse:separate;border-spacing:0}
+.sp-table th{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;padding:.6rem .75rem;border-bottom:2px solid #f3f4f6;background:#fff;position:sticky;top:0}
+.sp-table td{padding:.75rem;border-bottom:1px solid #f9fafb;font-size:.875rem;color:#374151;vertical-align:middle}
+.sp-table tr:last-child td{border-bottom:none}
+.sp-table tbody tr:hover td{background:#fafafa}
+.table-wrapper{background:#fff;border:1px solid #e5e7eb;border-radius:.875rem;overflow:hidden}
+</style>
+</head>
+<body>
+
+<!-- ── Loading screen ───────────────────────────────────────────────────── -->
+<div id="loading-screen">
+  <div class="spinner-border" style="color:var(--primary);width:2.5rem;height:2.5rem" role="status"></div>
+  <p style="color:#6b7280;margin:0;font-size:.9rem">Authenticating…</p>
+</div>
+
+<!-- ── Sidebar overlay (mobile) ─────────────────────────────────────────── -->
+<div id="sb-overlay" onclick="closeSidebar()"></div>
+
+<!-- ── Sidebar ────────────────────────────────────────────────────────────── -->
+<aside id="sidebar">
+  <a class="sb-brand" href="/">
+    <div class="brand-icon"><i class="bi bi-chat-quote-fill"></i></div>
+    <span>Social<em>Proof</em></span>
+  </a>
+
+  <nav>
+    <span class="nav-label">Main</span>
+    <button class="sb-link active" data-page="home" onclick="navigateTo('home')">
+      <i class="bi bi-speedometer2"></i> Home
+    </button>
+    <button class="sb-link" data-page="reviews" onclick="navigateTo('reviews')">
+      <i class="bi bi-star-fill"></i> Customer Reviews
+    </button>
+    <button class="sb-link" data-page="analytics" onclick="navigateTo('analytics')">
+      <i class="bi bi-graph-up-arrow"></i> Statistics
+    </button>
+    <button class="sb-link" data-page="embed" onclick="navigateTo('embed')">
+      <i class="bi bi-code-slash"></i> Embed
+    </button>
+
+    <span class="nav-label">Spaces</span>
+    <button class="sb-link" data-page="create-space" onclick="navigateTo('create-space')">
+      <i class="bi bi-plus-circle-fill"></i> Create Space
+    </button>
+    <button class="sb-link" data-page="spaces" onclick="navigateTo('spaces')">
+      <i class="bi bi-layers-fill"></i> My Spaces
+    </button>
+
+    <span class="nav-label">Account</span>
+    <button class="sb-link" data-page="profile" onclick="navigateTo('profile')">
+      <i class="bi bi-person-circle"></i> Profile
+    </button>
+    <button class="sb-link sb-logout" onclick="doLogout()">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </button>
+  </nav>
+
+  <div class="sb-footer">SocialProof Engine v1.0</div>
+</aside>
+
+<!-- ── Mobile top bar ─────────────────────────────────────────────────────── -->
+<div id="topbar">
+  <button class="btn btn-sm btn-light rounded-2 px-2" onclick="openSidebar()">
+    <i class="bi bi-list fs-5"></i>
+  </button>
+  <div class="tb-brand">Social<em>Proof</em></div>
+  <button class="btn btn-sm btn-light rounded-2 px-2" onclick="doLogout()" title="Logout">
+    <i class="bi bi-box-arrow-right"></i>
+  </button>
+</div>
+
+<!-- ── Main content wrapper ───────────────────────────────────────────────── -->
+<div id="main" style="display:none">
+  <div id="content">
+
+    <!-- ════════════════════ HOME ════════════════════ -->
+    <section data-section="home">
+      <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div>
+          <h2 id="home-greeting">Welcome back!</h2>
+          <p id="home-email" class="text-muted">Loading…</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <button class="btn-primary-sp" onclick="navigateTo('create-space')"><i class="bi bi-plus-lg me-1"></i>Create Space</button>
+          <button class="btn-outline-sp" onclick="navigateTo('spaces')"><i class="bi bi-layers me-1"></i>My Spaces</button>
+          <button class="btn-outline-sp" onclick="navigateTo('reviews')"><i class="bi bi-star me-1"></i>Reviews</button>
+          <button class="btn-outline-sp" onclick="navigateTo('analytics')"><i class="bi bi-graph-up-arrow me-1"></i>Statistics</button>
+          <button class="btn-outline-sp" onclick="navigateTo('embed')"><i class="bi bi-code-slash me-1"></i>Embed</button>
+        </div>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="row g-3 mb-4" id="stat-cards">
+        <div class="col-6 col-md-4 col-xl"><div class="stat-card d-flex align-items-center gap-3"><div class="stat-icon" style="background:#dcfce7"><i class="bi bi-layers-fill" style="color:var(--primary)"></i></div><div><div class="stat-val" id="stat-spaces">—</div><div class="stat-lbl">Total Spaces</div></div></div></div>
+        <div class="col-6 col-md-4 col-xl"><div class="stat-card d-flex align-items-center gap-3"><div class="stat-icon" style="background:#ede9fe"><i class="bi bi-chat-text-fill" style="color:#7c3aed"></i></div><div><div class="stat-val" id="stat-total">—</div><div class="stat-lbl">Total Reviews</div></div></div></div>
+        <div class="col-6 col-md-4 col-xl"><div class="stat-card d-flex align-items-center gap-3"><div class="stat-icon" style="background:#fef9c3"><i class="bi bi-hourglass-split" style="color:#b45309"></i></div><div><div class="stat-val" id="stat-pending">—</div><div class="stat-lbl">Pending Reviews</div></div></div></div>
+        <div class="col-6 col-md-4 col-xl"><div class="stat-card d-flex align-items-center gap-3"><div class="stat-icon" style="background:#dcfce7"><i class="bi bi-check-circle-fill" style="color:var(--primary)"></i></div><div><div class="stat-val" id="stat-approved">—</div><div class="stat-lbl">Approved Reviews</div></div></div></div>
+        <div class="col-12 col-md-4 col-xl"><div class="stat-card d-flex align-items-center gap-3"><div class="stat-icon" style="background:#fef3c7"><i class="bi bi-star-fill" style="color:#d97706"></i></div><div><div class="stat-val" id="stat-avg-rating">—</div><div class="stat-lbl">Average Rating</div></div></div></div>
+      </div>
+
+      <!-- Recent reviews -->
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h6 style="font-weight:700;margin:0">Recent Customer Reviews</h6>
+        <button class="btn-outline-sp" onclick="navigateTo('reviews')">View All</button>
+      </div>
+      <div class="table-wrapper" id="recent-reviews-wrap">
+        <div class="text-center p-4"><div class="spinner-border spinner-border-sm" style="color:var(--primary)"></div></div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ CUSTOMER REVIEWS (MODERATION INBOX) ════════════════════ -->
+    <section data-section="reviews" style="display:none">
+      <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div>
+          <h2>Customer Reviews</h2>
+          <p>Review, moderate, and feature customer testimonials across your Spaces.</p>
+        </div>
+      </div>
+
+      <!-- Moderation Status Tabs -->
+      <div class="d-flex gap-2 flex-wrap mb-3 border-bottom pb-2" id="mod-tabs">
+        <button class="mod-tab-btn active" data-status="pending" onclick="setModerationTab('pending')">
+          <i class="bi bi-hourglass-split me-1" style="color:#b45309"></i>Pending
+          <span class="badge rounded-pill ms-1" style="background:#fef9c3;color:#854d0e;border:1px solid #fde68a" id="tab-count-pending">0</span>
+        </button>
+        <button class="mod-tab-btn" data-status="approved" onclick="setModerationTab('approved')">
+          <i class="bi bi-check-circle-fill me-1" style="color:#059669"></i>Approved
+          <span class="badge rounded-pill ms-1" style="background:#dcfce7;color:#14532d;border:1px solid #86efac" id="tab-count-approved">0</span>
+        </button>
+        <button class="mod-tab-btn" data-status="archived" onclick="setModerationTab('archived')">
+          <i class="bi bi-archive-fill me-1" style="color:#4b5563"></i>Archived
+          <span class="badge rounded-pill ms-1" style="background:#f3f4f6;color:#374151;border:1px solid #d1d5db" id="tab-count-archived">0</span>
+        </button>
+        <button class="mod-tab-btn" data-status="rejected" onclick="setModerationTab('rejected')">
+          <i class="bi bi-x-circle-fill me-1" style="color:#dc2626"></i>Rejected
+          <span class="badge rounded-pill ms-1" style="background:#fee2e2;color:#7f1d1d;border:1px solid #fca5a5" id="tab-count-rejected">0</span>
+        </button>
+        <button class="mod-tab-btn" data-status="" onclick="setModerationTab('')">
+          All Reviews
+          <span class="badge rounded-pill ms-1" style="background:#f9fafb;color:#374151;border:1px solid #e5e7eb" id="tab-count-all">0</span>
+        </button>
+      </div>
+
+      <!-- Filter bar: Search, Rating, Space -->
+      <div class="filter-bar">
+        <div class="flex-fill" style="min-width:220px">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control border-start-0" id="review-search" placeholder="Search by name, email, role, or review text…" oninput="debounceReviewSearch()">
+          </div>
+        </div>
+        <select class="form-select" style="width:auto" id="review-rating-filter" onchange="applyReviewFilters()">
+          <option value="">All Ratings</option>
+          <option value="5">★★★★★ 5 Stars</option>
+          <option value="4">★★★★☆ 4 Stars</option>
+          <option value="3">★★★☆☆ 3 Stars</option>
+          <option value="2">★★☆☆☆ 2 Stars</option>
+          <option value="1">★☆☆☆☆ 1 Star</option>
+        </select>
+        <select class="form-select" style="width:auto" id="review-space-filter" onchange="applyReviewFilters()">
+          <option value="">All Spaces</option>
+        </select>
+      </div>
+
+      <!-- Reviews container -->
+      <div id="reviews-container">
+        <div class="text-center p-5"><div class="spinner-border" style="color:var(--primary)"></div></div>
+      </div>
+
+      <!-- Pagination -->
+      <div id="reviews-pagination" class="d-flex align-items-center justify-content-between mt-4 flex-wrap gap-2" style="display:none">
+        <div class="text-muted" style="font-size:.82rem" id="reviews-page-info">Showing 0 of 0 reviews</div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-secondary rounded-2" id="btn-prev-page" onclick="changeReviewPage(-1)" disabled><i class="bi bi-chevron-left me-1"></i>Previous</button>
+          <button class="btn btn-sm btn-outline-secondary rounded-2" id="btn-next-page" onclick="changeReviewPage(1)" disabled>Next<i class="bi bi-chevron-right ms-1"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ STATISTICS & ANALYTICS ════════════════════ -->
+    <section data-section="analytics" style="display:none">
+      <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+          <h2>Rating Analytics &amp; Statistics</h2>
+          <p>Real-time rating trends, star distributions, and testimonial status breakdowns.</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <label for="analytics-space-filter" class="form-label mb-0 text-muted small fw-bold">Filter by Space:</label>
+          <select class="form-select form-select-sm" style="width:auto;min-width:180px" id="analytics-space-filter" onchange="onAnalyticsSpaceChange()">
+            <option value="">All Spaces</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="analytics-loading" class="text-center p-5">
+        <div class="spinner-border" style="color:var(--primary);width:2.5rem;height:2.5rem" role="status"></div>
+        <p class="text-muted mt-3 mb-0" style="font-size:.9rem">Loading analytics…</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="analytics-error" class="alert alert-danger rounded-3 p-4 text-center my-3" style="display:none">
+        <i class="bi bi-exclamation-triangle-fill fs-3 d-block mb-2 text-danger"></i>
+        <h6 class="fw-bold mb-1">Unable to load statistics.</h6>
+        <p class="text-muted small mb-3">There was an issue retrieving your analytics from the server.</p>
+        <button class="btn-outline-sp btn-sm" onclick="loadAnalyticsPage()">Retry</button>
+      </div>
+
+      <!-- Main Analytics Content -->
+      <div id="analytics-content" style="display:none">
+        <!-- Top KPI Cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-lg-3">
+            <div class="stat-card d-flex align-items-center gap-3">
+              <div class="stat-icon" style="background:#ede9fe"><i class="bi bi-chat-text-fill" style="color:#7c3aed"></i></div>
+              <div>
+                <div class="stat-val" id="analytics-total-reviews">0</div>
+                <div class="stat-lbl">Total Reviews</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="stat-card d-flex align-items-center gap-3">
+              <div class="stat-icon" style="background:#fef3c7"><i class="bi bi-star-fill" style="color:#d97706"></i></div>
+              <div>
+                <div class="stat-val" id="analytics-avg-rating">—</div>
+                <div class="stat-lbl">Average Rating</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="stat-card d-flex align-items-center gap-3">
+              <div class="stat-icon" style="background:#dcfce7"><i class="bi bi-check-circle-fill" style="color:var(--primary)"></i></div>
+              <div>
+                <div class="stat-val" id="analytics-approved-reviews">0</div>
+                <div class="stat-lbl">Approved</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="stat-card d-flex align-items-center gap-3">
+              <div class="stat-icon" style="background:#fef9c3"><i class="bi bi-hourglass-split" style="color:#b45309"></i></div>
+              <div>
+                <div class="stat-val" id="analytics-pending-reviews">0</div>
+                <div class="stat-lbl">Pending</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rating Distribution & Status Summary Row -->
+        <div class="row g-4 mb-4">
+          <!-- Star Rating Distribution -->
+          <div class="col-lg-7">
+            <div class="stat-card h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0"><i class="bi bi-bar-chart-fill me-2 text-warning"></i>Star Rating Distribution</h6>
+                <span class="badge bg-light text-secondary border px-2 py-1" id="analytics-stars-summary">0 rated reviews</span>
+              </div>
+
+              <div id="analytics-empty-ratings" class="text-center py-4 text-muted" style="display:none">
+                <i class="bi bi-stars fs-3 opacity-50 d-block mb-1"></i>
+                <p class="mb-0 small">No reviews yet</p>
+              </div>
+
+              <div id="analytics-star-bars" class="d-flex flex-column gap-3">
+                <!-- 5 Stars -->
+                <div class="d-flex align-items-center gap-3">
+                  <div style="width:75px;font-size:.82rem;font-weight:600;white-space:nowrap" class="text-warning">
+                    <i class="bi bi-star-fill"></i> 5 Stars
+                  </div>
+                  <div class="progress flex-grow-1" style="height:10px;background:#f3f4f6;border-radius:6px">
+                    <div id="bar-star-5" class="progress-bar bg-warning" role="progressbar" style="width:0%"></div>
+                  </div>
+                  <div style="width:95px;text-align:right;font-size:.82rem" class="text-muted">
+                    <span id="count-star-5" class="fw-bold text-dark">0</span> (<span id="pct-star-5">0%</span>)
+                  </div>
+                </div>
+
+                <!-- 4 Stars -->
+                <div class="d-flex align-items-center gap-3">
+                  <div style="width:75px;font-size:.82rem;font-weight:600;white-space:nowrap" class="text-warning">
+                    <i class="bi bi-star-fill"></i> 4 Stars
+                  </div>
+                  <div class="progress flex-grow-1" style="height:10px;background:#f3f4f6;border-radius:6px">
+                    <div id="bar-star-4" class="progress-bar bg-warning" role="progressbar" style="width:0%"></div>
+                  </div>
+                  <div style="width:95px;text-align:right;font-size:.82rem" class="text-muted">
+                    <span id="count-star-4" class="fw-bold text-dark">0</span> (<span id="pct-star-4">0%</span>)
+                  </div>
+                </div>
+
+                <!-- 3 Stars -->
+                <div class="d-flex align-items-center gap-3">
+                  <div style="width:75px;font-size:.82rem;font-weight:600;white-space:nowrap" class="text-warning">
+                    <i class="bi bi-star-fill"></i> 3 Stars
+                  </div>
+                  <div class="progress flex-grow-1" style="height:10px;background:#f3f4f6;border-radius:6px">
+                    <div id="bar-star-3" class="progress-bar bg-warning" role="progressbar" style="width:0%"></div>
+                  </div>
+                  <div style="width:95px;text-align:right;font-size:.82rem" class="text-muted">
+                    <span id="count-star-3" class="fw-bold text-dark">0</span> (<span id="pct-star-3">0%</span>)
+                  </div>
+                </div>
+
+                <!-- 2 Stars -->
+                <div class="d-flex align-items-center gap-3">
+                  <div style="width:75px;font-size:.82rem;font-weight:600;white-space:nowrap" class="text-warning">
+                    <i class="bi bi-star-fill"></i> 2 Stars
+                  </div>
+                  <div class="progress flex-grow-1" style="height:10px;background:#f3f4f6;border-radius:6px">
+                    <div id="bar-star-2" class="progress-bar bg-warning" role="progressbar" style="width:0%"></div>
+                  </div>
+                  <div style="width:95px;text-align:right;font-size:.82rem" class="text-muted">
+                    <span id="count-star-2" class="fw-bold text-dark">0</span> (<span id="pct-star-2">0%</span>)
+                  </div>
+                </div>
+
+                <!-- 1 Star -->
+                <div class="d-flex align-items-center gap-3">
+                  <div style="width:75px;font-size:.82rem;font-weight:600;white-space:nowrap" class="text-warning">
+                    <i class="bi bi-star-fill"></i> 1 Star
+                  </div>
+                  <div class="progress flex-grow-1" style="height:10px;background:#f3f4f6;border-radius:6px">
+                    <div id="bar-star-1" class="progress-bar bg-warning" role="progressbar" style="width:0%"></div>
+                  </div>
+                  <div style="width:95px;text-align:right;font-size:.82rem" class="text-muted">
+                    <span id="count-star-1" class="fw-bold text-dark">0</span> (<span id="pct-star-1">0%</span>)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Summary Cards -->
+          <div class="col-lg-5">
+            <div class="stat-card h-100 d-flex flex-column justify-content-between">
+              <div>
+                <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart-fill me-2 text-emerald"></i>Testimonial Status Summary</h6>
+                <div class="d-flex flex-column gap-2">
+                  <div class="d-flex justify-content-between align-items-center p-2 rounded-2" style="background:#f0fdf4">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge badge-approved px-2 py-1 rounded-pill"><i class="bi bi-check-circle-fill me-1"></i>Approved</span>
+                      <small class="text-muted">Visible on Wall of Love</small>
+                    </div>
+                    <span id="status-count-approved" class="fw-bold text-dark fs-6">0</span>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center p-2 rounded-2" style="background:#fefce8">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge badge-pending px-2 py-1 rounded-pill"><i class="bi bi-hourglass-split me-1"></i>Pending</span>
+                      <small class="text-muted">Awaiting moderation</small>
+                    </div>
+                    <span id="status-count-pending" class="fw-bold text-dark fs-6">0</span>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center p-2 rounded-2" style="background:#fef2f2">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge badge-rejected px-2 py-1 rounded-pill"><i class="bi bi-x-circle-fill me-1"></i>Rejected</span>
+                      <small class="text-muted">Declined reviews</small>
+                    </div>
+                    <span id="status-count-rejected" class="fw-bold text-dark fs-6">0</span>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center p-2 rounded-2" style="background:#f3f4f6">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge badge-archived px-2 py-1 rounded-pill"><i class="bi bi-archive-fill me-1"></i>Archived</span>
+                      <small class="text-muted">Stored away</small>
+                    </div>
+                    <span id="status-count-archived" class="fw-bold text-dark fs-6">0</span>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center p-2 rounded-2" style="background:#f5f3ff">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge badge-featured px-2 py-1 rounded-pill"><i class="bi bi-star-fill me-1"></i>Featured</span>
+                      <small class="text-muted">Highlighted presentation</small>
+                    </div>
+                    <span id="status-count-featured" class="fw-bold text-dark fs-6">0</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center text-muted small">
+                <span>Active Scope: <strong id="analytics-scope-label" class="text-dark">All Spaces</strong></span>
+                <button class="btn btn-sm btn-outline-secondary rounded-2" onclick="loadAnalyticsPage()"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ EMBED GENERATOR ════════════════════ -->
+    <section data-section="embed" style="display:none">
+      <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+          <h2>Embed Generator</h2>
+          <p>Easily embed real approved customer testimonials onto your website or landing pages.</p>
+        </div>
+      </div>
+
+      <!-- No Spaces Warning (if 0 spaces) -->
+      <div id="embed-no-spaces" class="stat-card text-center p-5 mb-4" style="display:none">
+        <i class="bi bi-layers text-secondary fs-1 d-block mb-3 opacity-50"></i>
+        <h5 class="fw-bold text-dark mb-2">No Spaces found</h5>
+        <p class="text-muted mb-4">You need to create a Space first before you can generate embed widgets.</p>
+        <button class="btn-primary-sp" onclick="navigateTo('create-space')">
+          <i class="bi bi-plus-circle me-1"></i> Create Space
+        </button>
+      </div>
+
+      <!-- Main Embed Controls & Preview Grid -->
+      <div id="embed-main-content">
+        <!-- Configuration Controls Card -->
+        <div class="stat-card mb-4">
+          <div class="row g-3 align-items-end">
+            <!-- Space Selector -->
+            <div class="col-md-6 col-lg-5">
+              <label for="embed-space-select" class="form-label fw-bold">Select a Space <span class="text-danger">*</span></label>
+              <select class="form-select" id="embed-space-select" onchange="onEmbedConfigChange()">
+                <!-- Populated via JS -->
+              </select>
+            </div>
+
+            <!-- Embed Type Selector -->
+            <div class="col-md-6 col-lg-7">
+              <label class="form-label fw-bold d-block">Choose Embed Type</label>
+              <div class="btn-group w-100" role="group" aria-label="Embed Type">
+                <input type="radio" class="btn-check" name="embed-type-radio" id="embed-type-grid" value="grid" checked onchange="onEmbedConfigChange()">
+                <label class="btn btn-outline-success fw-semibold" for="embed-type-grid">
+                  <i class="bi bi-grid-3x3-gap me-1"></i> Grid
+                </label>
+
+                <input type="radio" class="btn-check" name="embed-type-radio" id="embed-type-carousel" value="carousel" onchange="onEmbedConfigChange()">
+                <label class="btn btn-outline-success fw-semibold" for="embed-type-carousel">
+                  <i class="bi bi-arrow-left-right me-1"></i> Carousel
+                </label>
+
+                <input type="radio" class="btn-check" name="embed-type-radio" id="embed-type-badge" value="badge" onchange="onEmbedConfigChange()">
+                <label class="btn btn-outline-success fw-semibold" for="embed-type-badge">
+                  <i class="bi bi-patch-check me-1"></i> Badge
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Generated Embed Code Card -->
+        <div class="stat-card mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="fw-bold mb-0 text-dark">
+              <i class="bi bi-code-square me-2 text-emerald"></i>Generated HTML / Iframe Snippet
+            </h6>
+            <button class="btn btn-sm btn-outline-success rounded-2 fw-semibold" onclick="copyEmbedSnippet()" id="btn-copy-embed">
+              <i class="bi bi-clipboard me-1"></i> Copy Code
+            </button>
+          </div>
+          <p class="text-muted small mb-2">Copy and paste this snippet into the HTML of your website where you want the testimonials to appear.</p>
+          <pre class="bg-light p-3 rounded-3 border text-dark font-monospace mb-0" style="font-size:0.85rem;white-space:pre-wrap;word-break:break-all;" id="embed-code-snippet"></pre>
+        </div>
+
+        <!-- Live Preview Header & Container Card -->
+        <div class="stat-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <h6 class="fw-bold mb-0 text-dark">
+                <i class="bi bi-eye-fill me-2 text-emerald"></i>Live Embed Preview
+              </h6>
+              <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill small" id="embed-preview-badge">Real Approved Testimonials</span>
+            </div>
+            <a href="#" target="_blank" class="btn btn-sm btn-outline-secondary rounded-2" id="btn-open-embed-tab">
+              <i class="bi bi-box-arrow-up-right me-1"></i> Open in New Tab
+            </a>
+          </div>
+
+          <!-- Preview Frame Wrapper -->
+          <div class="p-3 bg-light rounded-3 border" style="min-height: 200px;">
+            <iframe id="embed-preview-iframe" src="about:blank" width="100%" height="550" style="border:0;background:transparent;width:100%;transition:height 0.2s;" loading="lazy"></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ CREATE SPACE ════════════════════ -->
+    <section data-section="create-space" style="display:none">
+      <div class="page-header"><h2>Create New Space</h2><p>Set up a branded testimonial collection page for your customers.</p></div>
+
+      <div class="row g-4">
+        <div class="col-lg-7">
+          <div class="stat-card">
+            <div id="create-alert" style="display:none" class="mb-3"></div>
+            <div class="mb-3">
+              <label class="form-label">Space / Business Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="cs-name" placeholder="e.g. Acme Technologies" oninput="autoSlug(this.value)">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">URL Slug <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text" style="background:#f9fafb;font-size:.8rem;font-family:monospace">/collect/</span>
+                <input type="text" class="form-control" id="cs-slug" placeholder="acme-technologies">
+              </div>
+              <div class="slug-preview" id="cs-slug-preview">/collect/…</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Custom Prompt / Header</label>
+              <textarea class="form-control" id="cs-prompt" rows="2" placeholder="e.g. Would you mind sharing your experience with us?"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Space Logo</label>
+              <div class="d-flex align-items-center gap-3">
+                <div id="logo-preview-box"><i class="bi bi-image" style="color:#d1d5db;font-size:1.25rem"></i></div>
+                <div class="flex-fill">
+                  <input type="file" class="form-control form-control-sm" id="cs-logo-file" accept="image/*" onchange="uploadLogo(this,'cs-logo-url','logo-preview-box','create-alert')">
+                  <input type="hidden" id="cs-logo-url">
+                  <small class="text-muted">Max 2MB — JPEG, PNG, WebP, GIF, SVG</small>
+                </div>
+              </div>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <div class="p-3 rounded-3 border" style="background:#fafafa">
+                  <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="cs-avatar" checked>
+                    <label class="form-check-label" style="font-size:.85rem;font-weight:600" for="cs-avatar">Allow Avatar Upload</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="p-3 rounded-3 border" style="background:#fafafa">
+                  <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="cs-rating" checked>
+                    <label class="form-check-label" style="font-size:.85rem;font-weight:600" for="cs-rating">Enable Star Rating</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="form-label mb-0">Custom Questions <span class="text-muted fw-normal">(max 10)</span></label>
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-2" onclick="addQuestion('cs-questions')"><i class="bi bi-plus me-1"></i>Add</button>
+              </div>
+              <div id="cs-questions" class="d-flex flex-column gap-2"></div>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn-primary-sp" onclick="createSpace()" id="cs-submit-btn"><i class="bi bi-check-circle me-1"></i>Create Space</button>
+              <button class="btn-outline-sp" onclick="resetCreateForm()">Reset</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="stat-card" style="position:sticky;top:1.5rem">
+            <h6 style="font-weight:700;margin-bottom:1rem;color:#374151"><i class="bi bi-lightbulb me-1" style="color:#f59e0b"></i>Tips</h6>
+            <ul class="mb-0" style="font-size:.82rem;color:#6b7280;padding-left:1.2rem;line-height:1.9">
+              <li>The slug appears in your public collection URL.</li>
+              <li>A custom prompt tells customers what to write about.</li>
+              <li>Custom questions help collect structured feedback.</li>
+              <li>You can edit all settings after creation.</li>
+            </ul>
+            <hr>
+            <p style="font-size:.82rem;color:#6b7280;margin:0">After creation, share your public link:<br>
+            <code style="color:var(--primary)" id="tip-slug-preview">http://127.0.0.1:8000/collect/your-slug</code></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ MY SPACES ════════════════════ -->
+    <section data-section="spaces" style="display:none">
+      <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div><h2>My Spaces</h2><p>Manage your testimonial collection pages.</p></div>
+        <button class="btn-primary-sp" onclick="navigateTo('create-space')"><i class="bi bi-plus-lg me-1"></i>New Space</button>
+      </div>
+      <div id="spaces-grid">
+        <div class="text-center p-5"><div class="spinner-border" style="color:var(--primary)"></div></div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ PROFILE ════════════════════ -->
+    <section data-section="profile" style="display:none">
+      <div class="page-header"><h2>My Profile</h2><p>Your authenticated owner account details.</p></div>
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="stat-card">
+            <div class="d-flex align-items-center gap-4 mb-4">
+              <div class="profile-avatar" id="profile-avatar">?</div>
+              <div>
+                <h5 style="font-weight:800;margin:0 0 .2rem" id="profile-name">—</h5>
+                <p style="color:#6b7280;margin:0;font-size:.875rem" id="profile-email">—</p>
+              </div>
+            </div>
+            <table class="w-100" style="font-size:.875rem;border-collapse:collapse">
+              <tr style="border-bottom:1px solid #f3f4f6">
+                <td style="padding:.65rem 0;color:#6b7280;font-weight:600;width:40%">Full Name</td>
+                <td id="pt-name" style="padding:.65rem 0;font-weight:500">—</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f3f4f6">
+                <td style="padding:.65rem 0;color:#6b7280;font-weight:600">Email</td>
+                <td id="pt-email" style="padding:.65rem 0;font-weight:500">—</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f3f4f6">
+                <td style="padding:.65rem 0;color:#6b7280;font-weight:600">Email Status</td>
+                <td style="padding:.65rem 0" id="pt-verified">—</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f3f4f6">
+                <td style="padding:.65rem 0;color:#6b7280;font-weight:600">Account Status</td>
+                <td style="padding:.65rem 0"><span class="badge badge-approved px-2 py-1 rounded-pill" style="font-size:.75rem">Active</span></td>
+              </tr>
+              <tr>
+                <td style="padding:.65rem 0;color:#6b7280;font-weight:600">Member Since</td>
+                <td id="pt-joined" style="padding:.65rem 0;font-weight:500">—</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="stat-card">
+            <h6 style="font-weight:700;margin-bottom:.75rem"><i class="bi bi-envelope-check me-1" style="color:var(--primary)"></i>Email Verification</h6>
+            
+            <!-- State 3: Verified -->
+            <div id="verify-verified-state" style="display:none">
+              <div class="d-flex align-items-center gap-2 mb-2" style="font-size:.9rem;font-weight:600;color:var(--primary)">
+                <i class="bi bi-patch-check-fill fs-5"></i>
+                <span>🟢 Verified</span>
+              </div>
+              <p style="font-size:.85rem;font-weight:600;color:#111827;margin-bottom:.25rem">Your email address is verified!</p>
+              <p style="font-size:.82rem;color:#6b7280;margin:0">Your account is fully verified. All features, spaces, and embeds are accessible.</p>
+            </div>
+
+            <!-- State 1: Initial Unverified -->
+            <div id="verify-unverified-state" style="display:none">
+              <div class="d-flex align-items-center gap-2 mb-2 text-danger" style="font-size:.9rem;font-weight:600">
+                <i class="bi bi-x-circle-fill fs-5"></i>
+                <span>🔴 Not Verified</span>
+              </div>
+              <p style="font-size:.82rem;color:#6b7280">Your email address is not verified yet. Click below to receive a secure verification link in your Gmail inbox.</p>
+              <div id="verify-alert" style="display:none" class="mb-3"></div>
+              <button class="btn-primary-sp w-100" id="btn-dashboard-verify" onclick="sendVerificationEmail()">
+                <i class="bi bi-send me-1"></i> Verify Email
+              </button>
+            </div>
+
+            <!-- State 2: Verification Email Sent -->
+            <div id="verify-sent-state" style="display:none">
+              <div class="d-flex align-items-center gap-2 mb-2 text-warning" style="font-size:.9rem;font-weight:600">
+                <i class="bi bi-clock-history fs-5"></i>
+                <span>🟡 Verification email sent</span>
+              </div>
+              <p style="font-size:.82rem;color:#374151;font-weight:500;margin-bottom:.5rem">Check your Gmail inbox and click the verification link to verify your account.</p>
+              <p style="font-size:.78rem;color:#6b7280;margin-bottom:.75rem">Did not receive the email? Check spam or resend below.</p>
+              <div id="resend-alert" style="display:none" class="mb-3"></div>
+              <button class="btn-secondary-sp w-100" id="btn-resend-verification" onclick="sendVerificationEmail()">
+                <i class="bi bi-arrow-repeat me-1"></i> Resend Verification Email
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ══ Edit Space Modal ════════════════════════════════════════════════════ -->
+<div class="modal fade" id="editSpaceModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header border-0 px-4 pt-4">
+        <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2" style="color:var(--primary)"></i>Edit Space</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body px-4 pb-4">
+        <div id="edit-alert" style="display:none" class="mb-3"></div>
+        <input type="hidden" id="edit-space-id">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Space Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="edit-name">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">URL Slug <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text" style="background:#f9fafb;font-size:.8rem;font-family:monospace">/collect/</span>
+              <input type="text" class="form-control" id="edit-slug">
+            </div>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Custom Prompt</label>
+            <textarea class="form-control" id="edit-prompt" rows="2"></textarea>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Logo</label>
+            <div class="d-flex align-items-center gap-3">
+              <div id="edit-logo-preview-box" style="width:50px;height:50px;border-radius:.6rem;border:1.5px dashed #d1d5db;display:flex;align-items:center;justify-content:center;overflow:hidden">
+                <i class="bi bi-image" style="color:#d1d5db"></i>
+              </div>
+              <div class="flex-fill">
+                <input type="file" class="form-control form-control-sm" id="edit-logo-file" accept="image/*" onchange="uploadLogo(this,'edit-logo-url','edit-logo-preview-box','edit-alert')">
+                <input type="hidden" id="edit-logo-url">
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 rounded-3 border" style="background:#fafafa">
+              <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" id="edit-avatar">
+                <label class="form-check-label" style="font-size:.85rem;font-weight:600" for="edit-avatar">Allow Avatar</label>
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 rounded-3 border" style="background:#fafafa">
+              <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" id="edit-rating">
+                <label class="form-check-label" style="font-size:.85rem;font-weight:600" for="edit-rating">Star Rating</label>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="form-label mb-0">Custom Questions</label>
+              <button type="button" class="btn btn-sm btn-outline-secondary rounded-2" onclick="addQuestion('edit-questions')"><i class="bi bi-plus me-1"></i>Add</button>
+            </div>
+            <div id="edit-questions" class="d-flex flex-column gap-2"></div>
+          </div>
+        </div>
+        <div class="mt-4 pt-3 border-top d-flex gap-2">
+          <button class="btn-primary-sp" onclick="saveEditSpace()"><i class="bi bi-check-circle me-1"></i>Save Changes</button>
+          <button class="btn-outline-sp" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Confirmation Modal (Reject / Archive) ══════════════════════════════ -->
+<div class="modal fade" id="confirmActionModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header border-0 px-4 pt-4 pb-1">
+        <h5 class="modal-title fw-bold fs-6" id="confirmModalTitle">Confirm Action</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body px-4 py-3">
+        <p id="confirmModalBody" class="text-muted mb-0" style="font-size:.85rem">Are you sure you want to perform this action?</p>
+      </div>
+      <div class="modal-footer border-0 px-4 pb-4 pt-0 d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary flex-fill rounded-2" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-sm flex-fill rounded-2 text-white" id="confirmModalBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Toast container ══════════════════════════════════════════════════ -->
+<div id="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── Config ──────────────────────────────────────────────────────────────────
+const API = (window.location.origin && window.location.origin.includes('8000'))
+  ? window.location.origin
+  : 'http://127.0.0.1:8000';
+
+// ── State ───────────────────────────────────────────────────────────────────
+let currentUser = null;
+let allSpaces   = [];
+let allReviews  = [];
+let currentPage = 'home';
+
+// ── Sidebar (mobile) ────────────────────────────────────────────────────────
+function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('sb-overlay').classList.add('open'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sb-overlay').classList.remove('open'); }
+
+// ── Navigation ───────────────────────────────────────────────────────────────
+function navigateTo(page) {
+  currentPage = page;
+  document.querySelectorAll('[data-section]').forEach(s => s.style.display = 'none');
+  const sec = document.querySelector(`[data-section="${page}"]`);
+  if (sec) sec.style.display = '';
+
+  document.querySelectorAll('.sb-link[data-page]').forEach(l => l.classList.remove('active'));
+  const link = document.querySelector(`.sb-link[data-page="${page}"]`);
+  if (link) link.classList.add('active');
+
+  closeSidebar();
+
+  try {
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', `#${page}`);
+    }
+  } catch(_) {}
+
+  // Lazy load sections on first visit
+  if (page === 'reviews') fetchModerationReviews();
+  if (page === 'spaces') renderSpacesGrid();
+  if (page === 'home') loadHomePage();
+  if (page === 'analytics') loadAnalyticsPage();
+  if (page === 'embed') loadEmbedPage();
+}
+
+// ── Toast ────────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `sp-toast ${type}`;
+  t.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'exclamation-circle-fill'}"></i><span>${escapeHtml(msg)}</span>`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function escapeHtml(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function formatDate(iso) { if (!iso) return '—'; try { return new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); } catch{ return iso; } }
+function formatMediaUrl(url) {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  return `${API}${url.startsWith('/') ? '' : '/'}${url}`;
+}
+function starRating(r, max=5) {
+  if (!r) return '<span style="color:#d1d5db;font-size:.8rem">No rating</span>';
+  let h = '';
+  for(let i=1;i<=max;i++) h += `<i class="bi bi-star${i<=r?'-fill':''}" style="color:${i<=r?'#f59e0b':'#d1d5db'};font-size:.85rem"></i>`;
+  return h;
+}
+function statusBadge(s) {
+  const m = {pending:'badge-pending',approved:'badge-approved',rejected:'badge-rejected',archived:'badge-archived'};
+  return `<span class="badge ${m[s]||'badge-archived'} px-2 py-1 rounded-pill" style="font-size:.72rem;font-weight:600">${s||'unknown'}</span>`;
+}
+function showInlineAlert(id, msg, type='danger') {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = `alert alert-${type} rounded-3 py-2 px-3 mb-0`;
+  el.innerHTML = msg;
+  el.style.display = '';
+}
+function hideInlineAlert(id) { const el=document.getElementById(id); if(el) el.style.display='none'; }
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+async function initApp() {
+  try {
+    let res = await fetch(`${API}/api/auth/me`, { credentials:'include' });
+    if (res.status === 401) {
+      const rr = await fetch(`${API}/api/auth/refresh`, { method:'POST', credentials:'include' });
+      if (rr.ok) res = await fetch(`${API}/api/auth/me`, { credentials:'include' });
+    }
+    if (!res.ok) { window.location.replace('/?auth=login'); return; }
+    currentUser = await res.json();
+    renderUserData();
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('main').style.display = '';
+    // Load all data in background
+    await Promise.all([loadSpaces(), loadReviews(), loadStats()]);
+    const initialPage = (window.location.hash ? window.location.hash.replace('#', '') : '')
+      || (new URLSearchParams(window.location.search).get('tab'))
+      || 'home';
+    if (initialPage && initialPage !== 'home' && document.querySelector(`[data-section="${initialPage}"]`)) {
+      navigateTo(initialPage);
+    } else {
+      navigateTo('home');
+    }
+  } catch(e) {
+    document.getElementById('loading-screen').innerHTML = `
+      <div class="text-center p-4">
+        <i class="bi bi-wifi-off" style="font-size:2.5rem;color:#ef4444;display:block;margin-bottom:1rem"></i>
+        <h5 style="font-weight:700">Cannot reach server</h5>
+        <p style="color:#6b7280">Ensure the backend runs on <code>${API}</code></p>
+        <button onclick="location.reload()" class="btn-primary-sp mt-2">Retry</button>
+      </div>`;
+  }
+}
+
+function renderUserData() {
+  const u = currentUser;
+  // home
+  document.getElementById('home-greeting').textContent = `Welcome back, ${u.name.split(' ')[0]}!`;
+  document.getElementById('home-email').textContent = u.email;
+  // profile
+  document.getElementById('profile-avatar').textContent = u.name.charAt(0).toUpperCase();
+  document.getElementById('profile-name').textContent = u.name;
+  document.getElementById('profile-email').textContent = u.email;
+  document.getElementById('pt-name').textContent = u.name;
+  document.getElementById('pt-email').textContent = u.email;
+  document.getElementById('pt-joined').textContent = formatDate(u.created_at);
+  const vEl = document.getElementById('pt-verified');
+  const cardVerified = document.getElementById('verify-verified-state');
+  const cardUnverified = document.getElementById('verify-unverified-state');
+  const cardSent = document.getElementById('verify-sent-state');
+
+  if (u.is_email_verified) {
+    vEl.innerHTML = '<span class="badge badge-approved px-2 py-1 rounded-pill" style="font-size:.75rem"><i class="bi bi-patch-check-fill me-1"></i>Verified</span>';
+    if (cardVerified) cardVerified.style.display = 'block';
+    if (cardUnverified) cardUnverified.style.display = 'none';
+    if (cardSent) cardSent.style.display = 'none';
+  } else {
+    vEl.innerHTML = '<span class="badge badge-pending px-2 py-1 rounded-pill" style="font-size:.75rem"><i class="bi bi-x-circle me-1"></i>Not Verified</span>';
+    if (cardVerified) cardVerified.style.display = 'none';
+    if (window._verificationEmailSent) {
+      if (cardUnverified) cardUnverified.style.display = 'none';
+      if (cardSent) cardSent.style.display = 'block';
+    } else {
+      if (cardUnverified) cardUnverified.style.display = 'block';
+      if (cardSent) cardSent.style.display = 'none';
+    }
+  }
+}
+
+
+async function doLogout() {
+  try { await fetch(`${API}/api/auth/logout`, { method:'POST', credentials:'include' }); } catch(_) {}
+  window.location.replace('/');
+}
+
+// ── Data loading ─────────────────────────────────────────────────────────────
+async function loadSpaces() {
+  try {
+    const res = await fetch(`${API}/api/spaces`, { credentials:'include' });
+    if (res.ok) {
+      allSpaces = await res.json();
+      populateSpaceFilter();
+    }
+  } catch(_) {}
+}
+
+async function loadReviews() {
+  try {
+    const res = await fetch(`${API}/api/testimonials?limit=5`, { credentials:'include' });
+    if (res.ok) {
+      const data = await res.json();
+      allReviews = data.items || [];
+    } else {
+      allReviews = [];
+    }
+  } catch(_) { allReviews = []; }
+}
+
+async function loadStats() {
+  try {
+    const res = await fetch(`${API}/api/testimonials/stats`, { credentials:'include' });
+    if (res.ok) {
+      const stats = await res.json();
+      if (document.getElementById('stat-spaces')) document.getElementById('stat-spaces').textContent = stats.total_spaces;
+      if (document.getElementById('stat-total')) document.getElementById('stat-total').textContent = stats.total_reviews;
+      if (document.getElementById('stat-pending')) document.getElementById('stat-pending').textContent = stats.pending_reviews;
+      if (document.getElementById('stat-approved')) document.getElementById('stat-approved').textContent = stats.approved_reviews;
+
+      // Update tab badge counts
+      if (document.getElementById('tab-count-pending')) document.getElementById('tab-count-pending').textContent = stats.pending_reviews;
+      if (document.getElementById('tab-count-approved')) document.getElementById('tab-count-approved').textContent = stats.approved_reviews;
+      if (document.getElementById('tab-count-archived')) document.getElementById('tab-count-archived').textContent = stats.archived_reviews;
+      if (document.getElementById('tab-count-rejected')) document.getElementById('tab-count-rejected').textContent = stats.rejected_reviews;
+      if (document.getElementById('tab-count-all')) document.getElementById('tab-count-all').textContent = stats.total_reviews;
+    }
+  } catch(_) {}
+
+  try {
+    const aRes = await fetch(`${API}/api/analytics/overview`, { credentials:'include' });
+    if (aRes.ok) {
+      const aData = await aRes.json();
+      const avgEl = document.getElementById('stat-avg-rating');
+      if (avgEl) {
+        avgEl.textContent = (aData.average_rating !== null && aData.average_rating !== undefined)
+          ? `★ ${aData.average_rating.toFixed(1)}`
+          : '—';
+      }
+    }
+  } catch(_) {}
+}
+
+// ── HOME ─────────────────────────────────────────────────────────────────────
+function loadHomePage() {
+  loadStats();
+  loadReviews().then(() => {
+    const wrap = document.getElementById('recent-reviews-wrap');
+    if (!wrap) return;
+    if (!allReviews.length) {
+      wrap.innerHTML = `<div class="empty-state"><i class="bi bi-chat-text"></i><h5>No reviews yet</h5><p>Share your collection links to start receiving testimonials.</p></div>`;
+      return;
+    }
+    wrap.innerHTML = `<table class="sp-table">
+      <thead><tr><th>Customer</th><th>Space</th><th>Rating</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>${allReviews.map(r=>`
+        <tr>
+          <td><span style="font-weight:600">${escapeHtml(r.client_name)}</span>${r.company_role?`<br><small class="text-muted">${escapeHtml(r.company_role)}</small>`:''}</td>
+          <td><span class="badge" style="background:#f3f4f6;color:#374151;font-weight:500;font-size:.75rem">${escapeHtml(r.space_name||r.space_id)}</span></td>
+          <td>${starRating(r.rating)}</td>
+          <td>${statusBadge(r.status)}</td>
+          <td style="color:#9ca3af;font-size:.8rem">${formatDate(r.created_at)}</td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  });
+}
+
+// ── REVIEW MODERATION INBOX ──────────────────────────────────────────────────
+let modStatusTab = 'pending'; // Default page: Pending reviews
+let modRating = '';
+let modSpaceId = '';
+let modSearch = '';
+let modPage = 1;
+const modLimit = 9;
+let modTotal = 0;
+let modPages = 0;
+let searchDebounceTimer = null;
+
+function populateSpaceFilter() {
+  const sel = document.getElementById('review-space-filter');
+  if (sel) {
+    const currentVal = sel.value;
+    sel.innerHTML = '<option value="">All Spaces</option>';
+    allSpaces.forEach(s => {
+      sel.innerHTML += `<option value="${escapeHtml(s.id)}">${escapeHtml(s.name)}</option>`;
+    });
+    if (currentVal) sel.value = currentVal;
+  }
+  const aSel = document.getElementById('analytics-space-filter');
+  if (aSel) {
+    const aVal = aSel.value;
+    aSel.innerHTML = '<option value="">All Spaces</option>';
+    allSpaces.forEach(s => {
+      aSel.innerHTML += `<option value="${escapeHtml(s.id)}">${escapeHtml(s.name)}</option>`;
+    });
+    if (aVal) aSel.value = aVal;
+  }
+}
+
+function setModerationTab(status) {
+  modStatusTab = status;
+  modPage = 1;
+  document.querySelectorAll('.mod-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-status') === status);
+  });
+  fetchModerationReviews();
+}
+
+function debounceReviewSearch() {
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => {
+    modSearch = document.getElementById('review-search').value.trim();
+    modPage = 1;
+    fetchModerationReviews();
+  }, 350);
+}
+
+function applyReviewFilters() {
+  modRating = document.getElementById('review-rating-filter').value;
+  modSpaceId = document.getElementById('review-space-filter').value;
+  modPage = 1;
+  fetchModerationReviews();
+}
+
+function changeReviewPage(delta) {
+  const target = modPage + delta;
+  if (target >= 1 && target <= modPages) {
+    modPage = target;
+    fetchModerationReviews();
+  }
+}
+
+async function fetchModerationReviews() {
+  const container = document.getElementById('reviews-container');
+  const paginWrap = document.getElementById('reviews-pagination');
+  if (!container) return;
+
+  container.innerHTML = '<div class="text-center p-5"><div class="spinner-border" style="color:var(--primary)"></div><p class="text-muted mt-2" style="font-size:.85rem">Loading reviews…</p></div>';
+
+  const params = new URLSearchParams({
+    page: modPage,
+    limit: modLimit
+  });
+  if (modStatusTab) params.append('status', modStatusTab);
+  if (modRating) params.append('rating', modRating);
+  if (modSpaceId) params.append('space_id', modSpaceId);
+  if (modSearch) params.append('search', modSearch);
+
+  try {
+    const res = await fetch(`${API}/api/testimonials?${params.toString()}`, { credentials: 'include' });
+    if (!res.ok) {
+      container.innerHTML = `
+        <div class="empty-state text-danger">
+          <i class="bi bi-exclamation-triangle"></i>
+          <h5>Unable to load reviews</h5>
+          <p>Please check your connection and try again.</p>
+          <button class="btn-outline-sp mt-2" onclick="fetchModerationReviews()">Retry</button>
+        </div>`;
+      return;
+    }
+    const data = await res.json();
+    modTotal = data.total;
+    modPages = data.pages;
+    renderModerationCards(data.items);
+    renderPaginationInfo(data);
+    loadStats(); // refresh counts across tabs and home stats
+  } catch(err) {
+    container.innerHTML = `
+      <div class="empty-state text-danger">
+        <i class="bi bi-wifi-off"></i>
+        <h5>Connection Error</h5>
+        <p>Unable to connect to the server.</p>
+        <button class="btn-outline-sp mt-2" onclick="fetchModerationReviews()">Retry</button>
+      </div>`;
+  }
+}
+
+function renderModerationCards(reviews) {
+  const c = document.getElementById('reviews-container');
+  if (!reviews || !reviews.length) {
+    const tabName = modStatusTab ? (modStatusTab.charAt(0).toUpperCase() + modStatusTab.slice(1)) : 'Matching';
+    c.innerHTML = `
+      <div class="empty-state">
+        <i class="bi bi-inbox"></i>
+        <h5>No ${escapeHtml(tabName)} Reviews</h5>
+        <p>No testimonials found in this category matching your filters.</p>
+      </div>`;
+    return;
+  }
+
+  c.innerHTML = `<div class="row g-3">${reviews.map((r, i) => {
+    const isFeatured = !!r.is_featured;
+    return `
+    <div class="col-md-6 col-xl-4" id="mod-card-${escapeHtml(r.id)}">
+      <div class="review-card d-flex flex-column h-100">
+        <!-- Header: Avatar + Customer Info + Rating -->
+        <div class="d-flex align-items-center gap-3 mb-2">
+          ${r.avatar_url
+            ? `<img src="${formatMediaUrl(r.avatar_url)}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0" alt="avatar">`
+            : `<div class="review-avatar">${(r.client_name || 'A').charAt(0).toUpperCase()}</div>`}
+          <div class="flex-fill" style="min-width:0">
+            <div style="font-weight:700;font-size:.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+              ${escapeHtml(r.client_name)}
+            </div>
+            ${r.company_role ? `<div style="font-size:.78rem;color:#4b5563;font-weight:500">${escapeHtml(r.company_role)}</div>` : ''}
+            <div style="font-size:.72rem;color:#9ca3af;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+              <i class="bi bi-envelope me-1"></i>${escapeHtml(r.client_email)}
+            </div>
+          </div>
+          <div style="flex-shrink:0">${starRating(r.rating)}</div>
+        </div>
+
+        <!-- Review Text -->
+        <div class="my-2 flex-fill">
+          <p class="review-text-clamp" id="rt-${i}" onclick="toggleReviewText(${i})" style="font-size:.875rem;color:#374151;margin-bottom:0;line-height:1.55" title="Click to expand/collapse">
+            "${escapeHtml(r.review_text)}"
+          </p>
+        </div>
+
+        <!-- Space & Meta Row -->
+        <div class="d-flex flex-wrap gap-1 align-items-center mb-3 pt-2 border-top">
+          <span class="badge" style="background:#f3f4f6;color:#374151;font-weight:600;font-size:.72rem">
+            <i class="bi bi-layers me-1"></i>${escapeHtml(r.space_name || r.space_id)}
+          </span>
+          ${statusBadge(r.status)}
+          ${isFeatured ? '<span class="badge badge-featured px-2 py-1 rounded-pill" style="font-size:.72rem;font-weight:600"><i class="bi bi-star-fill me-1"></i>Featured</span>' : ''}
+          <span class="ms-auto" style="font-size:.73rem;color:#9ca3af">
+            ${formatDate(r.created_at)}
+          </span>
+        </div>
+
+        <!-- Action Buttons Row -->
+        <div class="d-flex flex-wrap gap-2 pt-2 border-top align-items-center justify-content-between">
+          <div class="d-flex gap-1 flex-wrap">
+            ${r.status !== 'approved' ? `
+              <button class="btn-action-approve" onclick="updateTestimonialStatus('${escapeHtml(r.id)}', 'approved')">
+                <i class="bi bi-check-lg"></i>Approve
+              </button>` : ''}
+            ${r.status !== 'rejected' ? `
+              <button class="btn-action-reject" onclick="confirmReject('${escapeHtml(r.id)}', '${escapeHtml(r.client_name)}')">
+                <i class="bi bi-x-lg"></i>Reject
+              </button>` : ''}
+            ${r.status !== 'archived' ? `
+              <button class="btn-action-archive" onclick="confirmArchive('${escapeHtml(r.id)}', '${escapeHtml(r.client_name)}')">
+                <i class="bi bi-archive"></i>Archive
+              </button>` : ''}
+          </div>
+          <div>
+            <button class="btn-action-feature ${isFeatured ? 'is-featured' : ''}" onclick="toggleTestimonialFeatured('${escapeHtml(r.id)}', ${isFeatured})" title="${isFeatured ? 'Click to unfeature' : 'Click to feature on Wall of Love'}">
+              <i class="bi bi-star${isFeatured ? '-fill' : ''}"></i> ${isFeatured ? 'Featured' : 'Feature'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderPaginationInfo(data) {
+  const paginWrap = document.getElementById('reviews-pagination');
+  const info = document.getElementById('reviews-page-info');
+  const prevBtn = document.getElementById('btn-prev-page');
+  const nextBtn = document.getElementById('btn-next-page');
+
+  if (!paginWrap) return;
+
+  if (data.total === 0) {
+    paginWrap.style.display = 'none';
+    return;
+  }
+
+  paginWrap.style.display = 'flex';
+  const start = (data.page - 1) * data.limit + 1;
+  const end = Math.min(data.page * data.limit, data.total);
+  info.textContent = `Showing ${start}–${end} of ${data.total} reviews (Page ${data.page} of ${data.pages || 1})`;
+
+  prevBtn.disabled = data.page <= 1;
+  nextBtn.disabled = data.page >= data.pages;
+}
+
+function confirmReject(id, name) {
+  document.getElementById('confirmModalTitle').textContent = 'Reject Testimonial';
+  document.getElementById('confirmModalBody').innerHTML = `Are you sure you want to reject the testimonial from <strong>${escapeHtml(name)}</strong>?<br><small class="text-muted">It will no longer appear under Pending.</small>`;
+  const btn = document.getElementById('confirmModalBtn');
+  btn.className = 'btn btn-sm flex-fill rounded-2 btn-danger';
+  btn.textContent = 'Reject';
+  btn.onclick = async () => {
+    bootstrap.Modal.getInstance(document.getElementById('confirmActionModal')).hide();
+    await updateTestimonialStatus(id, 'rejected');
+  };
+  new bootstrap.Modal(document.getElementById('confirmActionModal')).show();
+}
+
+function confirmArchive(id, name) {
+  document.getElementById('confirmModalTitle').textContent = 'Archive Testimonial';
+  document.getElementById('confirmModalBody').innerHTML = `Are you sure you want to archive the testimonial from <strong>${escapeHtml(name)}</strong>?<br><small class="text-muted">It can be accessed under the Archived tab.</small>`;
+  const btn = document.getElementById('confirmModalBtn');
+  btn.className = 'btn btn-sm flex-fill rounded-2 btn-secondary';
+  btn.textContent = 'Archive';
+  btn.onclick = async () => {
+    bootstrap.Modal.getInstance(document.getElementById('confirmActionModal')).hide();
+    await updateTestimonialStatus(id, 'archived');
+  };
+  new bootstrap.Modal(document.getElementById('confirmActionModal')).show();
+}
+
+async function updateTestimonialStatus(id, newStatus) {
+  try {
+    const res = await fetch(`${API}/api/testimonials/${id}/status`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      showToast(err.detail || 'Failed to update status', 'error');
+      return;
+    }
+    const label = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+    showToast(`Testimonial marked as ${label}!`, 'success');
+    await fetchModerationReviews();
+  } catch (e) {
+    showToast('Network error updating testimonial status.', 'error');
+  }
+}
+
+async function toggleTestimonialFeatured(id, currentlyFeatured) {
+  try {
+    const nextState = !currentlyFeatured;
+    const res = await fetch(`${API}/api/testimonials/${id}/featured`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ is_featured: nextState })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      showToast(err.detail || 'Failed to update featured state', 'error');
+      return;
+    }
+    showToast(nextState ? 'Testimonial marked as featured!' : 'Testimonial unfeatured.', 'success');
+    await fetchModerationReviews();
+  } catch (e) {
+    showToast('Network error toggling featured state.', 'error');
+  }
+}
+
+function toggleReviewText(i) {
+  const el = document.getElementById(`rt-${i}`);
+  if (el) el.classList.toggle('expanded');
+}
+
+// ── STATISTICS & ANALYTICS ───────────────────────────────────────────────────
+let currentAnalyticsSpaceId = '';
+
+function onAnalyticsSpaceChange() {
+  const sel = document.getElementById('analytics-space-filter');
+  currentAnalyticsSpaceId = sel ? sel.value : '';
+  loadAnalyticsPage();
+}
+
+async function loadAnalyticsPage() {
+  const loading = document.getElementById('analytics-loading');
+  const error = document.getElementById('analytics-error');
+  const content = document.getElementById('analytics-content');
+  if (!loading || !content) return;
+
+  loading.style.display = '';
+  content.style.display = 'none';
+  if (error) error.style.display = 'none';
+
+  // Ensure space filter dropdown is populated
+  const aSel = document.getElementById('analytics-space-filter');
+  if (aSel && aSel.children.length <= 1 && allSpaces.length > 0) {
+    populateSpaceFilter();
+  }
+
+  const queryParam = currentAnalyticsSpaceId ? `?space_id=${encodeURIComponent(currentAnalyticsSpaceId)}` : '';
+
+  try {
+    const res = await fetch(`${API}/api/analytics/overview${queryParam}`, { credentials: 'include' });
+    if (!res.ok) {
+      loading.style.display = 'none';
+      if (error) error.style.display = '';
+      return;
+    }
+
+    const data = await res.json();
+    loading.style.display = 'none';
+    content.style.display = '';
+
+    // 1. Top KPI Cards
+    const totalRevEl = document.getElementById('analytics-total-reviews');
+    if (totalRevEl) totalRevEl.textContent = data.total_reviews;
+
+    const avgRatingEl = document.getElementById('analytics-avg-rating');
+    if (avgRatingEl) {
+      avgRatingEl.textContent = (data.average_rating !== null && data.average_rating !== undefined)
+        ? `★ ${data.average_rating.toFixed(1)}`
+        : '—';
+    }
+
+    const approvedEl = document.getElementById('analytics-approved-reviews');
+    if (approvedEl) approvedEl.textContent = (data.status_distribution && data.status_distribution.approved) || 0;
+
+    const pendingEl = document.getElementById('analytics-pending-reviews');
+    if (pendingEl) pendingEl.textContent = (data.status_distribution && data.status_distribution.pending) || 0;
+
+    // 2. Star Distribution
+    const stars = data.star_distribution || {};
+    const s1 = stars.star_1 || 0;
+    const s2 = stars.star_2 || 0;
+    const s3 = stars.star_3 || 0;
+    const s4 = stars.star_4 || 0;
+    const s5 = stars.star_5 || 0;
+    const totalRated = s1 + s2 + s3 + s4 + s5;
+
+    const starsSummary = document.getElementById('analytics-stars-summary');
+    if (starsSummary) {
+      starsSummary.textContent = `${totalRated} rated review${totalRated === 1 ? '' : 's'}`;
+    }
+
+    const emptyRatingsNotice = document.getElementById('analytics-empty-ratings');
+    const starBars = document.getElementById('analytics-star-bars');
+    if (totalRated === 0) {
+      if (emptyRatingsNotice) emptyRatingsNotice.style.display = '';
+      if (starBars) starBars.style.opacity = '0.4';
+    } else {
+      if (emptyRatingsNotice) emptyRatingsNotice.style.display = 'none';
+      if (starBars) starBars.style.opacity = '1';
+    }
+
+    const starCounts = { 1: s1, 2: s2, 3: s3, 4: s4, 5: s5 };
+    for (let i = 1; i <= 5; i++) {
+      const cnt = starCounts[i];
+      const pct = totalRated > 0 ? Math.round((cnt / totalRated) * 100) : 0;
+
+      const barEl = document.getElementById(`bar-star-${i}`);
+      if (barEl) barEl.style.width = `${pct}%`;
+
+      const cntEl = document.getElementById(`count-star-${i}`);
+      if (cntEl) cntEl.textContent = cnt;
+
+      const pctEl = document.getElementById(`pct-star-${i}`);
+      if (pctEl) pctEl.textContent = `${pct}%`;
+    }
+
+    // 3. Status Summary
+    const statApp = document.getElementById('status-count-approved');
+    if (statApp) statApp.textContent = (data.status_distribution && data.status_distribution.approved) || 0;
+
+    const statPend = document.getElementById('status-count-pending');
+    if (statPend) statPend.textContent = (data.status_distribution && data.status_distribution.pending) || 0;
+
+    const statRej = document.getElementById('status-count-rejected');
+    if (statRej) statRej.textContent = (data.status_distribution && data.status_distribution.rejected) || 0;
+
+    const statArch = document.getElementById('status-count-archived');
+    if (statArch) statArch.textContent = (data.status_distribution && data.status_distribution.archived) || 0;
+
+    const statFeat = document.getElementById('status-count-featured');
+    if (statFeat) statFeat.textContent = data.featured_reviews || 0;
+
+    // 4. Scope label
+    const scopeLabel = document.getElementById('analytics-scope-label');
+    if (scopeLabel) {
+      if (data.space_name) {
+        scopeLabel.textContent = data.space_name;
+      } else {
+        scopeLabel.textContent = `All Spaces (${data.total_spaces || 0})`;
+      }
+    }
+  } catch (err) {
+    loading.style.display = 'none';
+    if (error) error.style.display = '';
+  }
+}
+
+// ── EMBED GENERATOR ──────────────────────────────────────────────────────────
+let selectedEmbedType = 'grid';
+
+function onEmbedConfigChange() {
+  const sel = document.getElementById('embed-space-select');
+  const checkedRadio = document.querySelector('input[name="embed-type-radio"]:checked');
+  selectedEmbedType = checkedRadio ? checkedRadio.value : 'grid';
+
+  const slug = sel ? sel.value : '';
+  if (!slug) return;
+
+  updateEmbedCodeAndPreview(slug, selectedEmbedType);
+}
+
+function updateEmbedCodeAndPreview(slug, type) {
+  const origin = window.location.origin || 'http://127.0.0.1:8000';
+  const embedUrl = `${origin}/embed/${encodeURIComponent(slug)}?type=${encodeURIComponent(type)}`;
+
+  let height = '550';
+  if (type === 'badge') height = '90';
+  else if (type === 'carousel') height = '320';
+  else if (type === 'grid') height = '550';
+
+  const snippet = `<iframe\n  src="${embedUrl}"\n  width="100%"\n  height="${height}"\n  style="border:0;"\n  loading="lazy">\n</iframe>`;
+
+  const snippetEl = document.getElementById('embed-code-snippet');
+  if (snippetEl) snippetEl.textContent = snippet;
+
+  const iframeEl = document.getElementById('embed-preview-iframe');
+  if (iframeEl) {
+    iframeEl.height = height;
+    iframeEl.src = `/embed/${encodeURIComponent(slug)}?type=${encodeURIComponent(type)}`;
+  }
+
+  const openTabBtn = document.getElementById('btn-open-embed-tab');
+  if (openTabBtn) {
+    openTabBtn.href = `/embed/${encodeURIComponent(slug)}?type=${encodeURIComponent(type)}`;
+  }
+}
+
+function copyEmbedSnippet() {
+  const snippetEl = document.getElementById('embed-code-snippet');
+  if (!snippetEl) return;
+  const text = snippetEl.textContent;
+
+  const onSuccess = () => {
+    showToast('Embed snippet copied to clipboard!', 'success');
+    const btn = document.getElementById('btn-copy-embed');
+    if (btn) {
+      btn.innerHTML = '<i class="bi bi-check2 me-1"></i> Copied!';
+      setTimeout(() => {
+        btn.innerHTML = '<i class="bi bi-clipboard me-1"></i> Copy Code';
+      }, 2000);
+    }
+  };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
+      fallbackCopy(text) ? onSuccess() : showToast('Failed to copy to clipboard.', 'error');
+    });
+  } else {
+    fallbackCopy(text) ? onSuccess() : showToast('Failed to copy to clipboard.', 'error');
+  }
+}
+
+function fallbackCopy(text) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  } catch(_) {
+    return false;
+  }
+}
+
+function loadEmbedPage() {
+  const noSpacesEl = document.getElementById('embed-no-spaces');
+  const mainContentEl = document.getElementById('embed-main-content');
+  const selectEl = document.getElementById('embed-space-select');
+
+  if (!allSpaces.length) {
+    if (noSpacesEl) noSpacesEl.style.display = '';
+    if (mainContentEl) mainContentEl.style.display = 'none';
+    return;
+  }
+
+  if (noSpacesEl) noSpacesEl.style.display = 'none';
+  if (mainContentEl) mainContentEl.style.display = '';
+
+  if (selectEl) {
+    const currentVal = selectEl.value;
+    selectEl.innerHTML = '';
+    allSpaces.forEach((sp) => {
+      const opt = document.createElement('option');
+      opt.value = sp.slug;
+      opt.textContent = `${sp.name} (/collect/${sp.slug})`;
+      selectEl.appendChild(opt);
+    });
+    if (currentVal && allSpaces.some(s => s.slug === currentVal)) {
+      selectEl.value = currentVal;
+    }
+  }
+
+  onEmbedConfigChange();
+}
+
+// ── CREATE SPACE ─────────────────────────────────────────────────────────────
+
+
+document.getElementById('cs-slug').addEventListener('input', () => {
+  const v = document.getElementById('cs-slug').value;
+  const preview = `/collect/${v||'…'}`;
+  document.getElementById('cs-slug-preview').textContent = preview;
+  document.getElementById('tip-slug-preview').textContent = `${API}${preview}`;
+});
+
+function autoSlug(val) {
+  const s = val.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  document.getElementById('cs-slug').value = s;
+  document.getElementById('cs-slug-preview').textContent = `/collect/${s||'…'}`;
+  document.getElementById('tip-slug-preview').textContent = `${API}/collect/${s||'your-slug'}`;
+}
+
+function addQuestion(containerId, text='') {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  if (c.children.length >= 10) { showToast('Maximum 10 questions allowed.', 'error'); return; }
+  const d = document.createElement('div');
+  d.className = 'd-flex gap-2 align-items-center';
+  d.innerHTML = `<input type="text" class="form-control q-input" placeholder="e.g. What did you like most?" value="${escapeHtml(text)}">
+    <button type="button" class="btn btn-sm btn-outline-danger rounded-2 px-2" onclick="this.parentElement.remove()"><i class="bi bi-trash"></i></button>`;
+  c.appendChild(d);
+}
+
+function getQuestions(containerId) {
+  return [...document.querySelectorAll(`#${containerId} .q-input`)].map(i=>i.value.trim()).filter(Boolean).map(q=>({question:q}));
+}
+
+async function uploadLogo(input, urlFieldId, previewId, alertId) {
+  if (!input.files||!input.files[0]) return;
+  const fd = new FormData();
+  fd.append('file', input.files[0]);
+  try {
+    const res = await fetch(`${API}/api/spaces/upload-logo`, { method:'POST', credentials:'include', body:fd });
+    const data = await res.json();
+    if (!res.ok) { showInlineAlert(alertId, data.detail||'Upload failed.'); return; }
+    document.getElementById(urlFieldId).value = data.logo_url;
+    const box = document.getElementById(previewId);
+    box.innerHTML = `<img src="${formatMediaUrl(data.logo_url)}" style="width:100%;height:100%;object-fit:cover;border-radius:.6rem">`;
+    showToast('Logo uploaded!');
+  } catch(_) { showToast('Network error uploading logo.','error'); }
+}
+
+function resetCreateForm() {
+  ['cs-name','cs-slug','cs-prompt','cs-logo-url'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('cs-avatar').checked = true;
+  document.getElementById('cs-rating').checked = true;
+  document.getElementById('cs-questions').innerHTML = '';
+  document.getElementById('logo-preview-box').innerHTML = '<i class="bi bi-image" style="color:#d1d5db;font-size:1.25rem"></i>';
+  document.getElementById('cs-slug-preview').textContent = '/collect/…';
+  hideInlineAlert('create-alert');
+  // Add default question
+  addQuestion('cs-questions','What did you like most about our service?');
+}
+
+async function createSpace() {
+  hideInlineAlert('create-alert');
+  const name   = document.getElementById('cs-name').value.trim();
+  const slug   = document.getElementById('cs-slug').value.trim();
+  const prompt = document.getElementById('cs-prompt').value.trim();
+  const logoUrl= document.getElementById('cs-logo-url').value;
+  const avatar = document.getElementById('cs-avatar').checked;
+  const rating = document.getElementById('cs-rating').checked;
+  const questions = getQuestions('cs-questions');
+
+  if (!name||!slug) { showInlineAlert('create-alert','Space Name and Slug are required.'); return; }
+
+  const btn = document.getElementById('cs-submit-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Creating…';
+
+  try {
+    const res = await fetch(`${API}/api/spaces`, {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,slug,custom_prompt:prompt||null,logo_url:logoUrl||null,avatar_enabled:avatar,rating_enabled:rating,custom_questions:questions})
+    });
+    const data = await res.json();
+    if (!res.ok) { showInlineAlert('create-alert', data.detail||'Failed to create space.'); return; }
+    showToast(`Space "${data.name}" created!`);
+    await loadSpaces();
+    resetCreateForm();
+    showInlineAlert('create-alert',`<i class="bi bi-check-circle-fill me-1"></i> Space <strong>${escapeHtml(data.name)}</strong> created! <a href="#" onclick="navigateTo('spaces');return false">View My Spaces →</a>`,'success');
+  } catch(_) { showInlineAlert('create-alert','Network error.'); }
+  finally { btn.disabled=false; btn.innerHTML='<i class="bi bi-check-circle me-1"></i>Create Space'; }
+}
+
+// ── MY SPACES ────────────────────────────────────────────────────────────────
+function renderSpacesGrid() {
+  const c = document.getElementById('spaces-grid');
+  if (!allSpaces.length) {
+    c.innerHTML = `<div class="empty-state"><i class="bi bi-layers"></i><h5>No Spaces yet</h5><p>Create your first Space to start collecting testimonials.</p><br><button class="btn-primary-sp mt-2" onclick="navigateTo('create-space')"><i class="bi bi-plus me-1"></i>Create Space</button></div>`;
+    return;
+  }
+  c.innerHTML = `<div class="row g-4">${allSpaces.map(sp=>`
+    <div class="col-md-6 col-xl-4" id="sc-${escapeHtml(sp.id)}">
+      <div class="space-card">
+        <div class="d-flex align-items-center gap-3">
+          ${sp.logo_url
+            ? `<img src="${formatMediaUrl(sp.logo_url)}" style="width:44px;height:44px;border-radius:.6rem;object-fit:cover;flex-shrink:0" alt="logo">`
+            : `<div class="space-init">${sp.name.charAt(0).toUpperCase()}</div>`}
+          <div style="min-width:0">
+            <div style="font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(sp.name)}</div>
+            <code style="font-size:.75rem;color:var(--primary)">/collect/${escapeHtml(sp.slug)}</code>
+          </div>
+        </div>
+        <p style="font-size:.82rem;color:#6b7280;margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">
+          ${sp.custom_prompt?escapeHtml(sp.custom_prompt):'<em>No custom prompt set</em>'}
+        </p>
+        <div class="d-flex gap-2 flex-wrap">
+          <span class="badge ${sp.avatar_enabled?'badge-approved':'badge-archived'} px-2 py-1 rounded-pill" style="font-size:.72rem;font-weight:600"><i class="bi bi-person-bounding-box me-1"></i>Avatar: ${sp.avatar_enabled?'On':'Off'}</span>
+          <span class="badge ${sp.rating_enabled?'badge-pending':'badge-archived'} px-2 py-1 rounded-pill" style="font-size:.72rem;font-weight:600"><i class="bi bi-star-fill me-1"></i>Rating: ${sp.rating_enabled?'On':'Off'}</span>
+        </div>
+        <div class="d-flex gap-2 pt-2 border-top flex-wrap align-items-center">
+          <a href="${formatMediaUrl('/collect/' + escapeHtml(sp.slug))}" target="_blank" class="btn btn-sm btn-outline-success rounded-2" style="font-size:.78rem;font-weight:600" title="Public review collection page"><i class="bi bi-pencil-square me-1"></i>Collect Reviews</a>
+          <a href="${formatMediaUrl('/wall/' + escapeHtml(sp.slug))}" target="_blank" class="btn btn-sm btn-success rounded-2 text-white" style="font-size:.78rem;font-weight:600;background:var(--primary);border-color:var(--primary)" title="Public Wall of Love page"><i class="bi bi-heart-fill me-1 text-danger"></i>View Wall of Love</a>
+          <button class="btn btn-sm btn-outline-secondary rounded-2 ms-auto" style="font-size:.78rem" onclick="openEditModal('${escapeHtml(sp.id)}')"><i class="bi bi-pencil me-1"></i>Edit</button>
+          <button class="btn btn-sm btn-outline-danger rounded-2" style="font-size:.78rem" onclick="deleteSpace('${escapeHtml(sp.id)}','${escapeHtml(sp.name)}')"><i class="bi bi-trash me-1"></i>Delete</button>
+        </div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+async function deleteSpace(id, name) {
+  if (!confirm(`Delete "${name}"?\n\nAll associated testimonials will also be deleted.`)) return;
+  try {
+    const res = await fetch(`${API}/api/spaces/${id}`, { method:'DELETE', credentials:'include' });
+    if (!res.ok) { const d=await res.json(); showToast(d.detail||'Delete failed.','error'); return; }
+    showToast(`Space "${name}" deleted.`);
+    // Remove card with fade
+    const card = document.getElementById(`sc-${id}`);
+    if (card) { card.style.transition='opacity .3s'; card.style.opacity='0'; setTimeout(()=>card.remove(),300); }
+    allSpaces = allSpaces.filter(s=>s.id!==id);
+    populateSpaceFilter();
+    if (!allSpaces.length) {
+      renderSpacesGrid();
+    }
+    await loadReviews(); // refresh review counts
+    loadHomePage();
+  } catch(_) { showToast('Network error.','error'); }
+}
+
+// ── EDIT SPACE ────────────────────────────────────────────────────────────────
+function openEditModal(id) {
+  const sp = allSpaces.find(s=>s.id===id);
+  if (!sp) return;
+  document.getElementById('edit-space-id').value = sp.id;
+  document.getElementById('edit-name').value = sp.name;
+  document.getElementById('edit-slug').value = sp.slug;
+  document.getElementById('edit-prompt').value = sp.custom_prompt||'';
+  document.getElementById('edit-logo-url').value = sp.logo_url||'';
+  document.getElementById('edit-avatar').checked = sp.avatar_enabled;
+  document.getElementById('edit-rating').checked  = sp.rating_enabled;
+  const prev = document.getElementById('edit-logo-preview-box');
+  prev.innerHTML = sp.logo_url
+    ? `<img src="${formatMediaUrl(sp.logo_url)}" style="width:100%;height:100%;object-fit:cover;border-radius:.6rem">`
+    : '<i class="bi bi-image" style="color:#d1d5db"></i>';
+  const qc = document.getElementById('edit-questions');
+  qc.innerHTML = '';
+  (sp.custom_questions||[]).forEach(q=>addQuestion('edit-questions', q.question||q));
+  hideInlineAlert('edit-alert');
+  new bootstrap.Modal(document.getElementById('editSpaceModal')).show();
+}
+
+async function saveEditSpace() {
+  hideInlineAlert('edit-alert');
+  const id      = document.getElementById('edit-space-id').value;
+  const name    = document.getElementById('edit-name').value.trim();
+  const slug    = document.getElementById('edit-slug').value.trim();
+  const prompt  = document.getElementById('edit-prompt').value.trim();
+  const logoUrl = document.getElementById('edit-logo-url').value;
+  const avatar  = document.getElementById('edit-avatar').checked;
+  const rating  = document.getElementById('edit-rating').checked;
+  const questions = getQuestions('edit-questions');
+  if (!name||!slug) { showInlineAlert('edit-alert','Name and Slug are required.'); return; }
+  try {
+    const res = await fetch(`${API}/api/spaces/${id}`, {
+      method:'PUT', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,slug,custom_prompt:prompt||null,logo_url:logoUrl||null,avatar_enabled:avatar,rating_enabled:rating,custom_questions:questions})
+    });
+    const data = await res.json();
+    if (!res.ok) { showInlineAlert('edit-alert', data.detail||'Update failed.'); return; }
+    showToast(`Space "${data.name}" updated!`);
+    bootstrap.Modal.getInstance(document.getElementById('editSpaceModal')).hide();
+    await loadSpaces();
+    renderSpacesGrid();
+    loadHomePage();
+  } catch(_) { showInlineAlert('edit-alert','Network error.'); }
+}
+
+// ── PROFILE / EMAIL VERIFICATION ──────────────────────────────────────────────
+window._verificationEmailSent = false;
+let _resendTimer = null;
+let _resendCountdown = 0;
+
+async function sendVerificationEmail() {
+  hideInlineAlert('verify-alert');
+  hideInlineAlert('resend-alert');
+  const btnInitial = document.getElementById('btn-dashboard-verify');
+  const btnResend = document.getElementById('btn-resend-verification');
+  const activeBtn = window._verificationEmailSent ? btnResend : btnInitial;
+
+  if (activeBtn) {
+    activeBtn.disabled = true;
+    activeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Sending email...';
+  }
+
+  try {
+    const res = await fetch(`${API}/api/auth/resend-verification`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    const data = await res.json();
+
+    if (res.status === 429) {
+      const match = (data.detail || '').match(/\d+/);
+      const secs = match ? parseInt(match[0], 10) : 60;
+      showInlineAlert(window._verificationEmailSent ? 'resend-alert' : 'verify-alert', data.detail || `Please wait ${secs}s before resending.`);
+      startResendTimer(secs);
+      return;
+    }
+
+    if (!res.ok) {
+      if (activeBtn) {
+        activeBtn.disabled = false;
+        activeBtn.innerHTML = window._verificationEmailSent
+          ? '<i class="bi bi-arrow-repeat me-1"></i> Resend Verification Email'
+          : '<i class="bi bi-send me-1"></i> Verify Email';
+      }
+      showInlineAlert(window._verificationEmailSent ? 'resend-alert' : 'verify-alert', data.detail || 'Unable to send verification email.');
+      return;
+    }
+
+    // Email successfully sent via SMTP
+    window._verificationEmailSent = true;
+    const cardUnverified = document.getElementById('verify-unverified-state');
+    const cardSent = document.getElementById('verify-sent-state');
+    if (cardUnverified) cardUnverified.style.display = 'none';
+    if (cardSent) cardSent.style.display = 'block';
+
+    showToast(data.message || 'Verification email sent! Check your Gmail inbox.');
+    startResendTimer(60);
+  } catch (_) {
+    if (activeBtn) {
+      activeBtn.disabled = false;
+      activeBtn.innerHTML = window._verificationEmailSent
+        ? '<i class="bi bi-arrow-repeat me-1"></i> Resend Verification Email'
+        : '<i class="bi bi-send me-1"></i> Verify Email';
+    }
+    showInlineAlert(window._verificationEmailSent ? 'resend-alert' : 'verify-alert', 'Network error. Is the server running?');
+  }
+}
+
+function startResendTimer(seconds) {
+  _resendCountdown = seconds;
+  const btn = document.getElementById('btn-resend-verification');
+  if (_resendTimer) clearInterval(_resendTimer);
+
+  const update = () => {
+    if (btn) {
+      if (_resendCountdown > 0) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="bi bi-clock-history me-1"></i> Resend in ${_resendCountdown}s`;
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-arrow-repeat me-1"></i> Resend Verification Email';
+      }
+    }
+  };
+
+  update();
+  _resendTimer = setInterval(() => {
+    _resendCountdown--;
+    if (_resendCountdown <= 0) {
+      clearInterval(_resendTimer);
+      _resendTimer = null;
+    }
+    update();
+  }, 1000);
+}
+
+// Backward compatibility wrapper
+function doVerifyEmail() {
+  return sendVerificationEmail();
+}
+
+
+// ── Boot ─────────────────────────────────────────────────────────────────────
+initApp();
+
+// Prevent going back to dashboard after logout via browser history
+window.addEventListener('pageshow', e => {
+  if (e.persisted) { fetch(`${API}/api/auth/me`,{credentials:'include'}).then(r=>{ if(!r.ok) window.location.replace('/'); }); }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testimonial & Social Proof Collector</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="announcement-bar py-2 text-center text-white fw-medium fs-7">
+        <div class="container d-flex align-items-center justify-content-center gap-2">
+            <span class="badge bg-white text-emerald rounded-pill px-2.5 py-1 text-uppercase tracking-wider fw-bold">New</span>
+            <span>Collect video &amp; text testimonials effortlessly for your product.</span>
+            <a href="#features" class="text-white text-decoration-underline ms-2">Explore Features &rarr;</a>
+        </div>
+    </div>
+
+    <!-- Glassmorphism Navigation -->
+    <nav class="navbar navbar-expand-lg sticky-top custom-navbar border-bottom shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-inline-flex align-items-center gap-2.5 p-0 m-0" href="#">
+                <span class="brand-logo-icon text-white shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M12 12a1 1 0 0 0 1-1V8.558a1 1 0 0 0-1-1h-1.388c0-.51.22-1.022.57-1.486.319-.42.823-.746 1.487-.976.302-.104.464-.427.365-.73-.099-.304-.423-.467-.726-.367C11.17 4.394 10.27 4.966 9.69 5.86c-.579.894-.69 1.954-.69 2.698V11a1 1 0 0 0 1 1zM6 12a1 1 0 0 0 1-1V8.558a1 1 0 0 0-1-1H4.612c0-.51.22-1.022.57-1.486.319-.42.823-.746 1.487-.976.302-.104.464-.427.365-.73-.099-.304-.423-.467-.726-.367C5.17 4.394 4.27 4.966 3.69 5.86c-.579.894-.69 1.954-.69 2.698V11a1 1 0 0 0 1 1z"/>
+                    </svg>
+                </span>
+                <span class="brand-title">Social<span class="gradient-text">Proof</span></span>
+            </a>
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto ms-lg-4 mb-2 mb-lg-0 gap-lg-1">
+                    <li class="nav-item d-none" id="nav-item-spaces">
+                        <a class="nav-link fw-bold px-3 text-emerald" href="#spaces-section"><i class="bi bi-grid-fill me-1"></i> My Spaces</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium px-3" href="#features">Capabilities</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium px-3" href="#system-status">System Status</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Auth Buttons (shown when logged out) -->
+                    <div id="auth-nav-buttons" class="d-flex gap-2">
+                        <button onclick="showAuthModal('login')" class="btn btn-outline-dark btn-sm px-3.5 py-2 fw-semibold rounded-3">Sign In</button>
+                        <button onclick="showAuthModal('register')" class="btn btn-emerald btn-sm px-3.5 py-2 fw-semibold rounded-3 shadow-sm">
+                            <i class="bi bi-person-plus-fill me-1"></i> Register
+                        </button>
+                    </div>
+                    <!-- User Pill (shown when logged in) -->
+                    <div id="auth-user-pill" class="d-none d-flex align-items-center gap-2">
+                        <a href="/dashboard" class="badge bg-emerald-subtle text-emerald border border-emerald-subtle rounded-pill px-3 py-2 fs-7 fw-semibold btn p-0 text-decoration-none">
+                            <i class="bi bi-person-check-fill me-1"></i>
+                            <span id="nav-user-name">Owner</span>
+                        </a>
+                        <button onclick="doLogout()" class="btn btn-outline-danger btn-sm px-3 fw-semibold rounded-3">
+                            <i class="bi bi-box-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section py-5 position-relative overflow-hidden">
+        <div class="hero-bg-glow"></div>
+        <div class="container py-lg-5 position-relative z-1">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6 animate-fade-in-up">
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 mb-3.5 rounded-pill hero-badge">
+                        <i class="bi bi-stars text-emerald"></i>
+                        <span class="fw-semibold fs-7 text-emerald-dark">Authentic Social Proof Platform</span>
+                    </div>
+                    <h1 class="display-4 fw-extrabold text-dark lh-sm mb-3.5">
+                        Turn Customer Words Into <span class="gradient-text">Unstoppable Growth</span>
+                    </h1>
+                    <p class="lead text-secondary mb-4.5 pe-lg-3">
+                        Collect video and text testimonials, curate authentic social proof, and embed conversion-boosting Wall of Love widgets seamlessly.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 mb-4.5">
+                        <button onclick="showAuthModal('register')" class="btn btn-emerald btn-lg px-4.5 py-3 fw-semibold shadow-emerald hover-bounce">
+                            Get Started Free <i class="bi bi-arrow-right ms-1 fs-5"></i>
+                        </button>
+                        <a href="#features" class="btn btn-outline-dark btn-lg px-4.5 py-3 fw-semibold rounded-3">
+                            <i class="bi bi-compass me-1.5"></i> Learn More
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Hero Visual Floating Card -->
+                <div class="col-lg-6 animate-fade-in-up delay-2">
+                    <div class="hero-card-container position-relative">
+                        <!-- Floating Toast Notification -->
+                        <div class="floating-toast shadow-emerald rounded-4 p-3 d-flex align-items-center gap-3 bg-white position-absolute z-3 animate-float-slow">
+                            <div class="toast-avatar bg-emerald-light text-emerald rounded-circle d-flex align-items-center justify-content-center fw-bold">
+                                AM
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center gap-1 text-warning fs-8">
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                                </div>
+                                <strong class="fs-7 text-dark d-block">Alex Miller submitted a review!</strong>
+                                <small class="text-muted fs-8">Verified Customer • 2 mins ago</small>
+                            </div>
+                        </div>
+
+                        <!-- Main Preview Card -->
+                        <div class="card border-0 shadow-lg-soft rounded-4 p-4 bg-white position-relative overflow-hidden hero-card animate-float">
+                            <div class="card-accent-bar"></div>
+                            <div class="d-flex align-items-center justify-content-between mb-3.5">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="hero-avatar text-white fw-bold d-flex align-items-center justify-content-center rounded-circle shadow-sm">
+                                        SJ
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-dark">Sarah Jenkins</h6>
+                                        <small class="text-secondary">Head of Growth @ SaaSify</small>
+                                    </div>
+                                </div>
+                                <span class="badge bg-emerald-subtle text-emerald border border-emerald-subtle rounded-pill px-3 py-1.5 fs-8 fw-semibold">
+                                    <i class="bi bi-patch-check-fill me-1"></i> Verified Testimonial
+                                </span>
+                            </div>
+                            <div class="text-warning mb-3 fs-6 d-flex gap-1">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                            <p class="text-dark fs-6 lh-base mb-4 italic-quote">
+                                "SocialProof transformed how we collect customer feedback. Setting up our collection space took less than 2 minutes, and conversion on our landing page jumped 35%!"
+                            </p>
+                            <div class="d-flex align-items-center justify-content-between pt-3 border-top text-muted fs-7">
+                                <span class="d-flex align-items-center gap-1"><i class="bi bi-clock-history"></i> Just now</span>
+                                <span class="fw-semibold text-emerald d-flex align-items-center gap-1">
+                                    <i class="bi bi-layers-fill"></i> Wall of Love Widget
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Space Management Section (Shown when authenticated) -->
+    <section id="spaces-section" class="py-5 bg-subtle-mesh border-top position-relative d-none">
+        <div class="container py-3">
+            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+                <div>
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-2 rounded-pill bg-emerald-subtle text-emerald border border-emerald-subtle">
+                        <i class="bi bi-layers-fill"></i>
+                        <span class="fw-semibold fs-7">Module 3 — Space Management</span>
+                    </div>
+                    <h2 class="fw-extrabold text-dark mb-1 fs-3">Your Testimonial Spaces</h2>
+                    <p class="text-secondary fs-7 mb-0">Create and manage your branded collection pages.</p>
+                </div>
+                <button onclick="showSpaceModal()" class="btn btn-emerald px-4 py-2.5 fw-semibold rounded-3 shadow-emerald">
+                    <i class="bi bi-plus-lg me-1.5"></i> Create New Space
+                </button>
+            </div>
+
+            <!-- Spaces List Container -->
+            <div id="spaces-list-container">
+                <div class="text-center py-5 bg-white rounded-4 shadow-sm border p-4">
+                    <div class="spinner-border text-emerald" role="status"></div>
+                    <p class="mt-2 text-muted fs-7 mb-0">Loading your Spaces...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- System Status Section -->
+    <section id="system-status" class="py-5 bg-white border-top border-bottom position-relative">
+        <div class="container py-3">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card border-0 rounded-4 shadow-lg-soft overflow-hidden">
+                        <div class="card-header bg-dark-slate text-white py-3.5 px-4 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2.5">
+                                <span class="pulse-icon-wrapper bg-emerald text-white rounded-circle p-1.5 d-flex">
+                                    <i class="bi bi-activity fs-6"></i>
+                                </span>
+                                <h5 class="mb-0 fw-bold text-white fs-6">Platform Service Status</h5>
+                            </div>
+                            <span id="system-health-badge" class="badge bg-white-10 text-white border border-white-20 px-3 py-2 rounded-pill fw-medium fs-7">
+                                Checking Server...
+                            </span>
+                        </div>
+                        <div class="card-body p-4 p-md-5">
+                            <div id="status-container">
+                                <div class="text-center py-4">
+                                    <div class="spinner-border text-emerald" role="status">
+                                        <span class="visually-hidden">Connecting...</span>
+                                    </div>
+                                    <p class="mt-3 text-secondary mb-0">Checking engine connection...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visual Feature Cards Section -->
+    <section id="features" class="py-5 bg-subtle-mesh">
+        <div class="container py-4">
+            <div class="text-center max-w-600 mx-auto mb-5">
+                <span class="badge bg-emerald-subtle text-emerald border border-emerald-subtle rounded-pill px-3 py-1.5 fs-7 fw-semibold text-uppercase tracking-wider mb-2">
+                    Core Platform
+                </span>
+                <h2 class="fw-bold text-dark display-6">Capabilities &amp; Features</h2>
+                <p class="text-secondary">Everything you need to collect, curate, and display authentic customer proof.</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Feature 1 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 feature-card p-3 bg-white">
+                        <div class="card-body">
+                            <div class="feature-icon bg-emerald-light text-emerald rounded-3 p-3 mb-3 d-inline-flex">
+                                <i class="bi bi-camera-reels-fill fs-4"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-2 fs-6">Collect Testimonials</h5>
+                            <p class="text-secondary fs-7 mb-0">
+                                Customizable review collection links supporting text, video clips, ratings, and customer avatars.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 feature-card p-3 bg-white">
+                        <div class="card-body">
+                            <div class="feature-icon bg-amber-light text-amber rounded-3 p-3 mb-3 d-inline-flex">
+                                <i class="bi bi-shield-check-fill fs-4"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-2 fs-6">Moderate Reviews</h5>
+                            <p class="text-secondary fs-7 mb-0">
+                                Comprehensive moderation queue to review, approve, tag, and organize feedback before publishing.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 feature-card p-3 bg-white">
+                        <div class="card-body">
+                            <div class="feature-icon bg-violet-light text-violet rounded-3 p-3 mb-3 d-inline-flex">
+                                <i class="bi bi-grid-3x3-gap-fill fs-4"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-2 fs-6">Wall of Love</h5>
+                            <p class="text-secondary fs-7 mb-0">
+                                Dynamic, responsive grid and carousel widgets ready to embed on any site with zero coding.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 feature-card p-3 bg-white">
+                        <div class="card-body">
+                            <div class="feature-icon bg-teal-light text-teal rounded-3 p-3 mb-3 d-inline-flex">
+                                <i class="bi bi-graph-up-arrow fs-4"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-2 fs-6">Analytics &amp; Embeds</h5>
+                            <p class="text-secondary fs-7 mb-0">
+                                High-performance lightweight embed scripts with visitor impression and conversion tracking.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clean SaaS Footer -->
+    <footer class="bg-dark-slate text-white py-4 border-top border-dark-subtle">
+        <div class="container">
+            <div class="row align-items-center justify-content-between g-3">
+                <div class="col-md-6 text-center text-md-start">
+                    <a class="d-inline-flex align-items-center gap-2.5 fw-bold text-white text-decoration-none mb-1 fs-6" href="#">
+                        <span class="brand-logo-icon text-white rounded-2 d-inline-flex align-items-center justify-content-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M12 12a1 1 0 0 0 1-1V8.558a1 1 0 0 0-1-1h-1.388c0-.51.22-1.022.57-1.486.319-.42.823-.746 1.487-.976.302-.104.464-.427.365-.73-.099-.304-.423-.467-.726-.367C11.17 4.394 10.27 4.966 9.69 5.86c-.579.894-.69 1.954-.69 2.698V11a1 1 0 0 0 1 1zM6 12a1 1 0 0 0 1-1V8.558a1 1 0 0 0-1-1H4.612c0-.51.22-1.022.57-1.486.319-.42.823-.746 1.487-.976.302-.104.464-.427.365-.73-.099-.304-.423-.467-.726-.367C5.17 4.394 4.27 4.966 3.69 5.86c-.579.894-.69 1.954-.69 2.698V11a1 1 0 0 0 1 1z"/>
+                            </svg>
+                        </span>
+                        <span>SocialProof Engine</span>
+                    </a>
+                    <p class="text-secondary-light fs-7 mb-0">© 2026 SocialProof Engine. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <div class="d-inline-flex gap-3 fs-7">
+                        <a href="#features" class="text-secondary-light text-decoration-none hover-emerald">Capabilities</a>
+                        <a href="#system-status" class="text-secondary-light text-decoration-none hover-emerald">Status</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================================= -->
+    <!-- MODULE 2 AUTH MODALS                                      -->
+    <!-- ========================================================= -->
+
+    <!-- Auth Main Modal (tab-based: login / register) -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+          <div class="modal-header border-0 pb-0 px-4 pt-4">
+            <ul class="nav nav-pills bg-light rounded-3 p-1 w-100" id="authTabs">
+              <li class="nav-item flex-fill">
+                <button class="nav-link w-100 rounded-2 fw-semibold" id="tab-login" onclick="switchAuthTab('login')">
+                  <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                </button>
+              </li>
+              <li class="nav-item flex-fill">
+                <button class="nav-link w-100 rounded-2 fw-semibold" id="tab-register" onclick="switchAuthTab('register')">
+                  <i class="bi bi-person-plus me-1"></i> Register
+                </button>
+              </li>
+            </ul>
+            <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-4 pb-4">
+
+            <!-- Alert area -->
+            <div id="auth-alert" class="d-none mt-3"></div>
+
+            <!-- Login Form -->
+            <div id="form-login">
+              <h5 class="fw-bold text-dark mt-3 mb-1">Welcome back</h5>
+              <p class="text-muted fs-7 mb-3">Sign in to your owner account</p>
+              <div class="mb-3">
+                <label class="form-label fw-semibold fs-7">Email address</label>
+                <input type="email" class="form-control rounded-3" id="login-email" placeholder="you@company.com">
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold fs-7">Password</label>
+                <input type="password" class="form-control rounded-3" id="login-password" placeholder="••••••••">
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <small></small>
+                <button class="btn btn-link btn-sm p-0 text-emerald fw-semibold fs-7" onclick="showForgotModal()">Forgot password?</button>
+              </div>
+              <button class="btn btn-emerald w-100 py-2.5 fw-semibold rounded-3" onclick="doLogin()">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+              </button>
+            </div>
+
+            <!-- Register Form -->
+            <div id="form-register" class="d-none">
+              <h5 class="fw-bold text-dark mt-3 mb-1">Create your account</h5>
+              <p class="text-muted fs-7 mb-3">Start collecting testimonials today</p>
+              <div class="mb-3">
+                <label class="form-label fw-semibold fs-7">Full name</label>
+                <input type="text" class="form-control rounded-3" id="register-name" placeholder="Jane Smith">
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold fs-7">Email address</label>
+                <input type="email" class="form-control rounded-3" id="register-email" placeholder="you@company.com">
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold fs-7">Password <small class="text-muted fw-normal">(min 8 characters)</small></label>
+                <input type="password" class="form-control rounded-3" id="register-password" placeholder="••••••••">
+              </div>
+              <button class="btn btn-emerald w-100 py-2.5 fw-semibold rounded-3" id="btn-register-submit" onclick="doRegister()">
+                <i class="bi bi-person-check me-1"></i> Create Account
+              </button>
+            </div>
+
+            <!-- Register Verification Sent Step -->
+            <div id="register-verify-step" class="d-none text-center py-3">
+              <div class="rounded-circle bg-warning-subtle text-warning mx-auto mb-3 d-flex align-items-center justify-content-center shadow-sm" style="width:64px;height:64px;" id="reg-step-icon">
+                <i class="bi bi-envelope-paper-heart-fill fs-2"></i>
+              </div>
+              <div class="mb-2">
+                <span class="badge bg-warning text-dark px-3 py-1 rounded-pill" id="reg-step-badge">
+                  <i class="bi bi-clock-history me-1"></i> Email Verification Required
+                </span>
+              </div>
+              <h5 class="fw-bold text-dark mb-1" id="reg-step-title">Email Verification Required</h5>
+              <p class="text-secondary fs-7 mb-3" id="reg-step-desc">Your account has been created. We've sent a verification link to your email address. Please check your inbox and click the link to verify your account.</p>
+              <div id="reg-step-alert" class="d-none mb-3 text-start"></div>
+              <div id="reg-step-actions">
+                <button class="btn btn-emerald w-100 py-2.5 fw-semibold rounded-3 shadow-emerald mb-2" onclick="switchToLoginAfterVerify()">
+                  <i class="bi bi-box-arrow-in-right me-1"></i> Continue to Sign In
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verify Email Modal (Real link verification) -->
+    <div class="modal fade" id="verifyModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+          <div class="modal-header border-0 pb-0 px-4 pt-4">
+            <h5 class="modal-title fw-bold"><i class="bi bi-envelope-check text-emerald me-2"></i>Email Verification</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-4 pb-4 text-center">
+            <div id="verify-alert" class="d-none mb-3 text-start"></div>
+            <div id="verify-modal-icon" class="rounded-circle bg-emerald-subtle text-emerald mx-auto mb-3 mt-2 d-flex align-items-center justify-content-center shadow-sm" style="width:60px;height:60px;">
+              <i class="bi bi-patch-check-fill fs-2"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-1" id="verify-modal-title">Email Verified</h5>
+            <p class="text-secondary fs-7 mb-4" id="verify-modal-desc">Validating your email verification link...</p>
+            <div id="verify-modal-actions">
+              <button class="btn btn-emerald w-100 py-2.5 fw-semibold rounded-3 shadow-emerald" onclick="switchToLoginAfterVerify()">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Continue to Sign In
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal fade" id="forgotModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+          <div class="modal-header border-0 pb-0 px-4 pt-4">
+            <h5 class="modal-title fw-bold" id="forgotModalTitle"><i class="bi bi-key text-amber me-2"></i>Forgot Password</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-4 pb-4">
+            <div id="forgot-alert" class="d-none mb-3"></div>
+            
+            <!-- Step 1: Request Reset Link -->
+            <div id="forgot-step-request">
+              <p class="text-muted fs-7 mb-3">Enter your registered email address. We will email you a secure password reset link.</p>
+              <div class="mb-3">
+                <label class="form-label fw-semibold fs-7">Email address</label>
+                <input type="email" class="form-control rounded-3" id="forgot-email" placeholder="you@company.com">
+              </div>
+              <button class="btn btn-warning w-100 py-2.5 fw-semibold rounded-3 text-dark" id="btn-forgot-submit" onclick="doForgotPassword()">
+                <i class="bi bi-send me-1"></i> Send Reset Link
+              </button>
+            </div>
+
+            <!-- Step 2: Set New Password (Opened via email link) -->
+            <div id="forgot-step-reset" class="d-none">
+              <div class="alert alert-info rounded-3 fs-7 py-2 px-3 mb-3">
+                <i class="bi bi-shield-lock-fill me-1"></i> Please enter your new password below.
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold fs-7">New Password</label>
+                <input type="password" class="form-control rounded-3" id="reset-new-password" placeholder="New password (min 8 chars)">
+              </div>
+              <button class="btn btn-emerald w-100 py-2.5 fw-semibold rounded-3" id="btn-reset-submit" onclick="doResetPassword()">
+                <i class="bi bi-lock-fill me-1"></i> Set New Password
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Modal (/me) -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+          <div class="modal-header border-0 pb-0 px-4 pt-4">
+            <h5 class="modal-title fw-bold"><i class="bi bi-person-circle text-emerald me-2"></i>Owner Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-4 pb-4">
+            <div id="profile-content">
+              <div class="text-center py-3">
+                <div class="spinner-border text-emerald spinner-border-sm" role="status"></div>
+                <p class="mt-2 text-muted fs-7 mb-0">Loading profile...</p>
+              </div>
+            </div>
+            <div class="d-flex gap-2 mt-3">
+              <button class="btn btn-outline-secondary flex-fill py-2 fw-semibold rounded-3" onclick="showVerifyModal()">
+                <i class="bi bi-envelope-check me-1"></i> Verify Email
+              </button>
+              <button class="btn btn-outline-danger flex-fill py-2 fw-semibold rounded-3" onclick="doLogout()">
+                <i class="bi bi-box-arrow-right me-1"></i> Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Space Create / Edit Modal -->
+    <div class="modal fade" id="spaceModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+          <div class="modal-header border-0 pb-0 px-4 pt-4">
+            <h5 class="modal-title fw-bold" id="spaceModalTitle">
+              <i class="bi bi-layers-fill text-emerald me-2"></i>Create New Space
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-4 pb-4">
+            <div id="space-modal-alert" class="d-none mb-3"></div>
+            <input type="hidden" id="space-edit-id" value="">
+
+            <div class="row g-3">
+              <!-- Space Name -->
+              <div class="col-md-6">
+                <label class="form-label fw-semibold fs-7">Space / Business Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control rounded-3" id="space-name" placeholder="e.g. ABC Technologies" oninput="autoGenerateSlug(this.value)">
+              </div>
+
+              <!-- Slug -->
+              <div class="col-md-6">
+                <label class="form-label fw-semibold fs-7">URL Slug <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted fs-8 font-monospace">/collect/</span>
+                  <input type="text" class="form-control rounded-3 font-monospace" id="space-slug" placeholder="abc-technologies">
+                </div>
+                <small class="text-muted fs-8">Lowercase, numbers, hyphens only.</small>
+              </div>
+
+              <!-- Custom Prompt -->
+              <div class="col-12">
+                <label class="form-label fw-semibold fs-7">Custom Review Prompt / Header Title</label>
+                <textarea class="form-control rounded-3" id="space-prompt" rows="2" placeholder="e.g. Would you mind sharing a quick review about your experience with us?"></textarea>
+              </div>
+
+              <!-- Logo File Upload -->
+              <div class="col-12">
+                <label class="form-label fw-semibold fs-7">Space Logo Image</label>
+                <div class="d-flex align-items-center gap-3">
+                  <div id="space-logo-preview" class="rounded-3 bg-light d-flex align-items-center justify-content-center border" style="width:50px;height:50px;">
+                    <i class="bi bi-image text-muted fs-4"></i>
+                  </div>
+                  <div class="flex-fill">
+                    <input type="file" class="form-control rounded-3 form-control-sm" id="space-logo-file" accept="image/*" onchange="uploadLogoFile(this)">
+                    <input type="hidden" id="space-logo-url" value="">
+                    <small class="text-muted fs-8">Max 2MB. JPEG, PNG, WebP, GIF, SVG.</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Toggles -->
+              <div class="col-md-6">
+                <div class="form-check form-switch p-3 rounded-3 border bg-light">
+                  <input class="form-check-input ms-0 me-2" type="checkbox" id="space-avatar-toggle" checked>
+                  <label class="form-check-label fw-semibold fs-7" for="space-avatar-toggle">Allow Customer Avatar Upload</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-check form-switch p-3 rounded-3 border bg-light">
+                  <input class="form-check-input ms-0 me-2" type="checkbox" id="space-rating-toggle" checked>
+                  <label class="form-check-label fw-semibold fs-7" for="space-rating-toggle">Enable Star Rating Field</label>
+                </div>
+              </div>
+
+              <!-- Custom Questions -->
+              <div class="col-12">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <label class="form-label fw-semibold fs-7 mb-0">Custom Questions (Max 10)</label>
+                  <button type="button" class="btn btn-outline-emerald btn-sm px-2.5 py-1 fs-8 fw-semibold rounded-2" onclick="addCustomQuestionInput()">
+                    <i class="bi bi-plus-lg me-1"></i> Add Question
+                  </button>
+                </div>
+                <div id="custom-questions-list" class="d-flex flex-column gap-2">
+                  <!-- Dynamic question inputs rendered here -->
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-2 border-top d-flex gap-2">
+              <button type="button" class="btn btn-emerald flex-fill py-2.5 fw-semibold rounded-3" onclick="saveSpace()">
+                <i class="bi bi-check-circle-fill me-1"></i> Save Space
+              </button>
+              <button type="button" class="btn btn-outline-secondary px-4 py-2.5 fw-semibold rounded-3" data-bs-dismiss="modal">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Public Collection Page Preview Modal (/collect/{space_slug}) -->
+    <div class="modal fade" id="publicSpaceModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+          <div class="modal-header bg-dark-slate text-white py-3 px-4">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-emerald text-white"><i class="bi bi-eye-fill me-1"></i> Public Preview</span>
+              <code class="text-white-50 fs-8" id="public-preview-url-badge">/collect/...</code>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-0 bg-subtle-mesh">
+            <div id="public-space-content" class="p-4 p-md-5">
+              <div class="text-center py-4">
+                <div class="spinner-border text-emerald" role="status"></div>
+                <p class="mt-2 text-muted fs-7 mb-0">Loading public space preview...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="js/main.js"></script>
+</body>
+</html>

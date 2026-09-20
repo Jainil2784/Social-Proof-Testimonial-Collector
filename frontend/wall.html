@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wall of Love — SocialProof</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        :root {
+            --primary: #059669;
+            --primary-dark: #047857;
+            --primary-light: #ecfdf5;
+            --amber-gold: #f59e0b;
+        }
+
+        body {
+            background-color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #0f172a;
+        }
+
+        /* Responsive Masonry Layout */
+        .masonry-grid {
+            column-count: 1;
+            column-gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .masonry-grid {
+                column-count: 2;
+                column-gap: 1.5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .masonry-grid {
+                column-count: 3;
+                column-gap: 1.5rem;
+            }
+        }
+
+        .masonry-item {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .testimonial-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Featured Testimonial Styling */
+        .testimonial-card.featured-card {
+            border: 2px solid #f59e0b;
+            box-shadow: 0 8px 20px -2px rgba(245, 158, 11, 0.2), 0 4px 6px -2px rgba(245, 158, 11, 0.1);
+            background: linear-gradient(180deg, #ffffff 0%, #fffef8 100%);
+        }
+
+        .featured-ribbon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding: 0.35rem 0.85rem;
+            border-bottom-left-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Avatar styles */
+        .customer-avatar-img {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #e2e8f0;
+        }
+
+        .customer-avatar-initials {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #059669;
+            background: #ecfdf5;
+            border: 2px solid #a7f3d0;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .star-filled {
+            color: #f59e0b;
+        }
+
+        .star-empty {
+            color: #cbd5e1;
+        }
+
+        .space-logo-img {
+            max-height: 54px;
+            max-width: 180px;
+            object-fit: contain;
+        }
+
+        .space-logo-placeholder {
+            width: 54px;
+            height: 54px;
+            background: #ecfdf5;
+            color: #059669;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .quote-icon {
+            font-size: 1.4rem;
+            line-height: 1;
+            color: #94a3b8;
+            opacity: 0.5;
+        }
+
+        .bg-subtle-mesh {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#e2e8f0 1.2px, transparent 1.2px);
+            background-size: 28px 28px;
+        }
+    </style>
+</head>
+<body class="bg-subtle-mesh">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white border-bottom py-3 sticky-top shadow-sm">
+        <div class="container d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <div class="bg-emerald-subtle rounded-3 p-1 text-emerald d-flex align-items-center justify-content-center" style="width:34px;height:34px;">
+                    <i class="bi bi-chat-heart-fill fs-5"></i>
+                </div>
+                <a href="/" class="text-decoration-none fw-bold text-dark fs-5">SocialProof</a>
+            </div>
+            <div>
+                <a id="header-collect-btn" href="#" class="btn btn-outline-success btn-sm rounded-pill px-3 fw-semibold d-none">
+                    <i class="bi bi-plus-circle me-1"></i> Give Feedback
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container py-4 py-md-5 flex-grow-1">
+
+        <!-- Loading State -->
+        <div id="wall-loading" class="text-center py-5">
+            <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <h5 class="fw-semibold text-secondary">Loading Wall of Love...</h5>
+        </div>
+
+        <!-- 404 / Error State -->
+        <div id="wall-error" class="card border-0 shadow rounded-4 p-5 text-center bg-white mx-auto d-none" style="max-width: 580px;">
+            <div class="rounded-circle bg-danger-subtle text-danger mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                <i class="bi bi-exclamation-triangle-fill fs-2"></i>
+            </div>
+            <h3 class="fw-bold text-dark mb-2" id="error-title">Space Not Found</h3>
+            <p class="text-secondary fs-6 mb-4" id="error-desc">The Wall of Love you are looking for does not exist or has been removed.</p>
+            <div>
+                <a href="/" class="btn btn-dark px-4 py-2 rounded-3 fw-semibold">&larr; Return Home</a>
+            </div>
+        </div>
+
+        <!-- Wall Content (Rendered when successful) -->
+        <div id="wall-content" class="d-none">
+
+            <!-- Branded Space Header -->
+            <div class="text-center mb-5 pb-2">
+                <div id="space-logo-wrapper" class="mb-3 d-none">
+                    <!-- Logo image injected here -->
+                </div>
+                <h1 id="wall-space-name" class="fw-bolder display-6 text-dark mb-2">Space Name</h1>
+                <p id="wall-custom-prompt" class="text-secondary fs-5 mx-auto mb-4" style="max-width: 700px;"></p>
+                <div class="d-flex justify-content-center align-items-center gap-3">
+                    <span id="wall-count-badge" class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fs-6 fw-semibold">
+                        <i class="bi bi-heart-fill me-1 text-danger"></i> Wall of Love
+                    </span>
+                    <a id="wall-submit-btn" href="#" class="btn btn-success btn-sm rounded-pill px-3 py-2 fw-semibold shadow-sm">
+                        <i class="bi bi-pencil-square me-1"></i> Submit a Testimonial
+                    </a>
+                </div>
+            </div>
+
+            <!-- Empty State (When space exists but 0 approved testimonials) -->
+            <div id="wall-empty-state" class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white mx-auto d-none" style="max-width: 540px;">
+                <div class="rounded-circle bg-light text-muted mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 68px; height: 68px;">
+                    <i class="bi bi-chat-square-quote fs-2 text-secondary"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-2">No testimonials yet.</h4>
+                <p class="text-secondary fs-6 mb-4">Be the first customer to share your thoughts and love for this space!</p>
+                <div>
+                    <a id="wall-empty-submit-btn" href="#" class="btn btn-success px-4 py-2 rounded-pill fw-semibold shadow-sm">
+                        <i class="bi bi-plus-circle me-1"></i> Share Your Testimonial
+                    </a>
+                </div>
+            </div>
+
+            <!-- Masonry Grid for Testimonials -->
+            <div id="wall-masonry" class="masonry-grid d-none">
+                <!-- Testimonial cards injected here via JS -->
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-top py-4 text-center text-muted fs-7 mt-auto">
+        <div class="container">
+            <p class="mb-1 text-secondary">Wall of Love powered by <a href="/" class="text-decoration-none fw-semibold text-emerald">SocialProof</a></p>
+            <p class="mb-0 text-muted small">&copy; 2026 SocialProof. Verified Customer Reviews.</p>
+        </div>
+    </footer>
+
+    <!-- Client-side script -->
+    <script>
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            try {
+                const d = new Date(dateStr);
+                return d.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            } catch (e) {
+                return '';
+            }
+        }
+
+        function renderStars(rating) {
+            if (!rating || rating < 1) return '';
+            let html = '<div class="d-inline-flex gap-1 text-warning mb-2">';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    html += '<i class="bi bi-star-fill star-filled fs-6"></i>';
+                } else {
+                    html += '<i class="bi bi-star-fill star-empty fs-6"></i>';
+                }
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function getSlugFromPath() {
+            const parts = window.location.pathname.split('/').filter(p => p.length > 0);
+            // Expected /wall/{space_slug}
+            const wallIdx = parts.indexOf('wall');
+            if (wallIdx !== -1 && parts.length > wallIdx + 1) {
+                return parts[wallIdx + 1];
+            }
+            return parts[parts.length - 1] || '';
+        }
+
+        async function loadWallOfLove() {
+            const loadingEl = document.getElementById('wall-loading');
+            const errorEl = document.getElementById('wall-error');
+            const contentEl = document.getElementById('wall-content');
+            const masonryEl = document.getElementById('wall-masonry');
+            const emptyEl = document.getElementById('wall-empty-state');
+
+            const slug = getSlugFromPath();
+            if (!slug) {
+                loadingEl.classList.add('d-none');
+                errorEl.classList.remove('d-none');
+                document.getElementById('error-title').textContent = 'Invalid Space Link';
+                document.getElementById('error-desc').textContent = 'No Space slug was provided in the URL.';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/public/spaces/${encodeURIComponent(slug)}/wall`);
+                if (!res.ok) {
+                    loadingEl.classList.add('d-none');
+                    errorEl.classList.remove('d-none');
+                    if (res.status === 404) {
+                        document.getElementById('error-title').textContent = 'Space Not Found';
+                        document.getElementById('error-desc').textContent = 'The testimonial wall you are looking for does not exist or has been removed.';
+                    } else {
+                        document.getElementById('error-title').textContent = 'Failed to Load Testimonials';
+                        document.getElementById('error-desc').textContent = 'An unexpected error occurred while loading this Wall of Love. Please try again later.';
+                    }
+                    return;
+                }
+
+                const data = await res.json();
+                const space = data.space || {};
+                const testimonials = data.testimonials || [];
+
+                // Render Space details
+                document.title = `${space.name || 'Wall of Love'} — SocialProof`;
+                document.getElementById('wall-space-name').textContent = space.name || 'Wall of Love';
+                
+                const customPromptEl = document.getElementById('wall-custom-prompt');
+                if (space.custom_prompt && space.custom_prompt.trim()) {
+                    customPromptEl.textContent = space.custom_prompt;
+                    customPromptEl.classList.remove('d-none');
+                } else {
+                    customPromptEl.textContent = 'Here is what customers are saying about us.';
+                }
+
+                // Header Collect button & link
+                const collectUrl = `/collect/${encodeURIComponent(space.slug || slug)}`;
+                const headerCollectBtn = document.getElementById('header-collect-btn');
+                headerCollectBtn.href = collectUrl;
+                headerCollectBtn.classList.remove('d-none');
+
+                const wallSubmitBtn = document.getElementById('wall-submit-btn');
+                wallSubmitBtn.href = collectUrl;
+
+                const wallEmptySubmitBtn = document.getElementById('wall-empty-submit-btn');
+                wallEmptySubmitBtn.href = collectUrl;
+
+                // Render Space Logo if present
+                const logoWrapper = document.getElementById('space-logo-wrapper');
+                if (space.logo_url) {
+                    logoWrapper.innerHTML = `<img src="${escapeHtml(space.logo_url)}" alt="${escapeHtml(space.name)} Logo" class="space-logo-img" onerror="this.parentElement.classList.add('d-none')">`;
+                    logoWrapper.classList.remove('d-none');
+                }
+
+                // Render Count badge
+                const countBadge = document.getElementById('wall-count-badge');
+                if (testimonials.length > 0) {
+                    countBadge.innerHTML = `<i class="bi bi-heart-fill me-1 text-danger"></i> ${testimonials.length} ${testimonials.length === 1 ? 'Review' : 'Reviews'}`;
+                }
+
+                // Render Testimonials or Empty State
+                loadingEl.classList.add('d-none');
+                contentEl.classList.remove('d-none');
+
+                if (testimonials.length === 0) {
+                    emptyEl.classList.remove('d-none');
+                    masonryEl.classList.add('d-none');
+                } else {
+                    emptyEl.classList.add('d-none');
+                    masonryEl.classList.remove('d-none');
+                    masonryEl.innerHTML = '';
+
+                    testimonials.forEach(item => {
+                        const itemWrapper = document.createElement('div');
+                        itemWrapper.className = 'masonry-item';
+
+                        const isFeatured = Boolean(item.is_featured);
+                        const cardClasses = isFeatured ? 'testimonial-card featured-card p-4' : 'testimonial-card p-4';
+
+                        // Rating HTML
+                        let ratingHtml = '';
+                        if (space.rating_enabled && item.rating) {
+                            ratingHtml = renderStars(item.rating);
+                        }
+
+                        // Avatar HTML
+                        let avatarHtml = '';
+                        if (space.avatar_enabled) {
+                            const initial = (item.client_name ? item.client_name.charAt(0) : '?').toUpperCase();
+                            if (item.avatar_url) {
+                                avatarHtml = `
+                                    <div class="me-3 position-relative">
+                                        <img src="${escapeHtml(item.avatar_url)}" alt="${escapeHtml(item.client_name)}" class="customer-avatar-img"
+                                             onerror="this.outerHTML='<div class=\\'customer-avatar-initials\\'>${initial}</div>'">
+                                    </div>
+                                `;
+                            } else {
+                                avatarHtml = `
+                                    <div class="me-3">
+                                        <div class="customer-avatar-initials">${initial}</div>
+                                    </div>
+                                `;
+                            }
+                        }
+
+                        // Featured Ribbon
+                        const featuredRibbonHtml = isFeatured ? `
+                            <div class="featured-ribbon">
+                                <i class="bi bi-star-fill"></i> Featured
+                            </div>
+                        ` : '';
+
+                        // Format Date
+                        const dateFormatted = formatDate(item.created_at);
+
+                        itemWrapper.innerHTML = `
+                            <div class="${cardClasses}">
+                                ${featuredRibbonHtml}
+                                ${ratingHtml}
+                                <p class="card-text text-dark fs-6 mb-4" style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(item.review_text)}</p>
+                                
+                                <div class="d-flex align-items-center pt-2 border-top">
+                                    ${avatarHtml}
+                                    <div class="flex-grow-1 overflow-hidden">
+                                        <h6 class="fw-bold mb-0 text-dark text-truncate">${escapeHtml(item.client_name)}</h6>
+                                        ${item.company_role ? `<p class="text-secondary small mb-0 text-truncate">${escapeHtml(item.company_role)}</p>` : ''}
+                                    </div>
+                                    ${dateFormatted ? `<div class="text-muted small ms-2 flex-shrink-0">${dateFormatted}</div>` : ''}
+                                </div>
+                            </div>
+                        `;
+
+                        masonryEl.appendChild(itemWrapper);
+                    });
+                }
+
+            } catch (err) {
+                console.error("Error loading wall:", err);
+                loadingEl.classList.add('d-none');
+                errorEl.classList.remove('d-none');
+                document.getElementById('error-title').textContent = 'Network Error';
+                document.getElementById('error-desc').textContent = 'Unable to connect to the server. Please check your connection and try again.';
+            }
+        }
+
+        // Initialize on DOM load
+        document.addEventListener('DOMContentLoaded', loadWallOfLove);
+    </script>
+</body>
+</html>
