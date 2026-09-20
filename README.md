@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Project 05: Testimonial & Social Proof Collector
 
 A full-stack application for collecting, managing, and embedding testimonials and social proof.
@@ -90,3 +91,6 @@ Run the full automated Pytest suite for MongoDB:
 ```powershell
 .\venv\Scripts\pytest.exe -v
 ```
+=======
+# Social-Proof-Testimonial-Collector
+>>>>>>> 0341779fc6628293a17cc3a4d06cd7ce1ef2f376
